@@ -1,0 +1,179 @@
+import { User, Role } from '../models/index.js'
+import { hashPassword, comparePassword } from '../../helpers/hash-password.js'
+import { generateJWT } from '../../helpers/generate-jwt.js'
+import { generateVerificationToken } from '../../helpers/generate-verification-token.js'
+import { sendVerificationEmail } from '../../helpers/send-email.js'
+import { Op } from 'sequelize'
+import jwt from 'jsonwebtoken'
+import { config } from '../../configs/config.js'
+import crypto from 'crypto'
+import { sendResetPasswordEmail } from '../../helpers/send-email.js'
+
+
+export const registerUser = async (data) => {
+  const { name, email, password, role } = data
+
+  // Validaciones de campos vacíos
+  if (!name || !name.trim()) throw new Error('El nombre es requerido')
+  if (!email || !email.trim()) throw new Error('El correo es requerido')
+  if (!password || !password.trim()) throw new Error('La contraseña es requerida')
+
+  if (password.trim().length < 6)
+    throw new Error('La contraseña debe tener al menos 6 caracteres')
+
+  // Verificar duplicados
+  const emailExists = await User.findOne({
+    where: { email: email.trim() }
+  })
+  if (emailExists) throw new Error('El correo ya está registrado')
+
+const finalRole = role || 'CLIENTE'
+
+  const userRole = await Role.findOne({
+    where: { name: finalRole }
+  })
+
+  if (!userRole) throw new Error('Rol no válido')
+
+  const hashedPassword = await hashPassword(password.trim())
+
+  const user = await User.create({
+    name: name.trim(),
+    email: email.trim(),
+    password: hashedPassword,
+    roleId: userRole.id,
+
+    // CLIENTE necesita verificar correo
+    // otros roles se activan automáticamente
+    isActive: finalRole === 'CLIENTE' ? false : true
+  })
+
+  const verificationToken = generateVerificationToken(user)
+
+  await sendVerificationEmail(user.email, verificationToken)
+
+  const userWithoutPassword = user.toJSON()
+  delete userWithoutPassword.password
+
+  return {
+    user: userWithoutPassword,
+    verificationToken
+  }
+}
+
+
+export const loginUser = async (identifier, password) => {
+  if (!identifier || !identifier.trim())
+    throw new Error('El correo o username es requerido')
+
+  if (!password || !password.trim())
+    throw new Error('La contraseña es requerida')
+
+  const user = await User.findOne({
+    where: {
+      [Op.or]: [{ email: identifier.trim() }]
+    },
+    include: Role
+  })
+
+  if (!user) throw new Error('Credenciales inválidas')
+
+  const validPassword = await comparePassword(
+    password.trim(),
+    user.password
+  )
+
+  if (!validPassword) throw new Error('Credenciales inválidas')
+
+  if (!user.isActive)
+    throw new Error('Cuenta no verificada. Revisa tu correo')
+
+  const token = generateJWT(user)
+
+  const userWithoutPassword = user.toJSON()
+  delete userWithoutPassword.password
+
+  return { token, user: userWithoutPassword }
+}
+
+
+export const verifyAccount = async (token) => {
+  try {
+    const { uid } = jwt.verify(token, config.jwt.secret)
+
+    const user = await User.findByPk(uid)
+    if (!user) throw new Error('Usuario no encontrado')
+
+    if (!user.isActive) {
+      user.isActive = true
+      await user.save()
+    }
+
+    const authToken = generateJWT(user)
+
+    const userWithoutPassword = user.toJSON()
+    delete userWithoutPassword.password
+
+    return {
+      message: 'Cuenta verificada correctamente',
+      token: authToken,
+      user: userWithoutPassword
+    }
+  } catch (error) {
+    throw new Error('Token inválido o expirado')
+  }
+}
+
+
+export const getUsers = async () => {
+  const users = await User.findAll({
+    include: Role,
+    attributes: { exclude: ['password'] }
+  })
+
+  return users
+}
+
+export const forgotPasswordService = async (email) => {
+  const user = await User.findOne({ where: { email: email.trim() } })
+
+  // Por seguridad, siempre respondemos igual aunque el correo no exista
+  if (!user) {
+    return { message: 'Si el correo existe, recibirás un enlace para restablecer tu contraseña.' }
+  }
+
+  const resetToken = crypto.randomBytes(32).toString('hex')
+  const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000) // 1 hora
+
+  await user.update({
+    resetPasswordToken: resetToken,
+    resetPasswordExpiry: resetTokenExpiry
+  })
+
+  await sendResetPasswordEmail(user.email, user.name, resetToken)
+
+  return { message: 'Si el correo existe, recibirás un enlace para restablecer tu contraseña.' }
+}
+
+export const resetPasswordService = async (token, newPassword) => {
+  if (!token || !newPassword) throw new Error('Token y nueva contraseña son requeridos')
+  if (newPassword.trim().length < 6) throw new Error('La contraseña debe tener al menos 6 caracteres')
+
+  const user = await User.findOne({ where: { resetPasswordToken: token } })
+
+  if (!user) throw new Error('Token inválido o expirado')
+
+  if (new Date() > new Date(user.resetPasswordExpiry)) {
+    throw new Error('El enlace ha expirado. Solicita uno nuevo.')
+  }
+
+  const hashedPassword = await hashPassword(newPassword.trim())
+
+  await user.update({
+    password: hashedPassword,
+    resetPasswordToken: null,
+    resetPasswordExpiry: null
+  })
+
+  return { message: 'Contraseña actualizada correctamente' }
+}
