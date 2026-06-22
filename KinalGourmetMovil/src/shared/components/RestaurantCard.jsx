@@ -6,6 +6,7 @@ import {
   Pressable,
   StyleSheet,
   Animated,
+  useWindowDimensions,
 } from 'react-native';
 import { colors, fonts, shadow, FEATURE_MAP, cardStyles as S } from '../constants/restaurants';
 
@@ -66,6 +67,10 @@ function AvailDots({ count, total = 5 }) {
 
 export default function RestaurantCard({ restaurant, onPress }) {
   const scale = useRef(new Animated.Value(1)).current;
+  const { width } = useWindowDimensions();
+
+  const imgW   = Math.round(width * 0.27);
+  const cardH  = imgW + 16;
 
   const {
     _id,
@@ -74,7 +79,7 @@ export default function RestaurantCard({ restaurant, onPress }) {
     category,
     address,
     photo,
-    averagePrice,   // campo real del backend
+    averagePrice,
     isFeatured,
     features,
   } = restaurant || {};
@@ -86,12 +91,10 @@ export default function RestaurantCard({ restaurant, onPress }) {
   const icon         = CATEGORY_ICON[catKey] ?? '✺';
   const catLabel     = CATEGORY_LABEL[catKey] ?? (category ?? 'Restaurante');
 
-  // Precio formateado desde averagePrice del backend
   const priceText = averagePrice != null
     ? `Q${Number(averagePrice).toFixed(2)}`
     : '—';
 
-  // Features reales del backend → etiquetas en español (máx 2)
   const featureTags = Object.entries(features ?? {})
     .filter(([, v]) => v === true)
     .slice(0, 2)
@@ -112,12 +115,11 @@ export default function RestaurantCard({ restaurant, onPress }) {
         onPress={() => onPress?.(restaurant)}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={S.card}
+        style={[S.card, { height: cardH }]}
         accessibilityRole="button"
         accessibilityLabel={`Ver menú de ${name}`}
       >
-        {/* ── Imagen izquierda ── */}
-        <View style={S.imageWrap}>
+        <View style={[S.imageWrap, { width: imgW }]}>
           <Image
             source={typeof photo === 'string' ? { uri: photo } : photo}
             style={StyleSheet.absoluteFillObject}
@@ -128,7 +130,6 @@ export default function RestaurantCard({ restaurant, onPress }) {
           </View>
         </View>
 
-        {/* ── Contenido derecho ── */}
         <View style={S.body}>
           <View style={S.bodyTop}>
             {isFeatured && (
@@ -143,13 +144,11 @@ export default function RestaurantCard({ restaurant, onPress }) {
           </View>
 
           <View style={S.bodyBottom}>
-            {/* Precio real del backend */}
             <View>
               <Text style={S.priceLabel}>precio promedio</Text>
               <Text style={S.price}>{priceText}</Text>
             </View>
 
-            {/* Features o disponibilidad */}
             <View style={S.rightInfo}>
               {featureTags.length > 0 ? (
                 <View style={S.tagRow}>

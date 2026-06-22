@@ -8,6 +8,7 @@ import {
   RefreshControl,
   SafeAreaView,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import { useRestaurantStore } from '../../../shared/store/useRestaurantStore';
 import RestaurantCard from '../../../shared/components/RestaurantCard';
@@ -35,6 +36,9 @@ export default function RestaurantsScreen({ navigation }) {
     setFilterFeature,
   } = useRestaurantStore();
 
+  const { width } = useWindowDimensions();
+  const isSmall = width < 360;
+
   useEffect(() => {
     fetchRestaurants();
   }, []);
@@ -48,7 +52,6 @@ export default function RestaurantsScreen({ navigation }) {
     });
   };
 
-  // ── Estado vacío / error / auth ───────────────────────────────────────────
   const renderEmpty = () => {
     if (requiresAuth) {
       return (
@@ -93,7 +96,6 @@ export default function RestaurantsScreen({ navigation }) {
     );
   };
 
-  // ── Chips de filtro (cabecera del FlatList) ───────────────────────────────
   const ListHeader = () => (
     <>
       <ScrollView
@@ -140,7 +142,6 @@ export default function RestaurantsScreen({ navigation }) {
     </>
   );
 
-  // ── Render ────────────────────────────────────────────────────────────────
   const showEmpty =
     requiresAuth ||
     (loading && restaurants.length === 0) ||
@@ -150,9 +151,14 @@ export default function RestaurantsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>⚏ Explorar</Text>
-        <Text style={styles.title}>¿Dónde cenamos hoy?</Text>
-      </View>
+        <Text style={[styles.title, isSmall && styles.titleSmall]}>
+            ¿Cuál restaurante te{' '}
+            <Text style={styles.titleAccent}>interesa?</Text>
+        </Text>
+        <Text style={styles.subtitle}>
+            Explora la excelencia gastronómica de Guatemala.
+        </Text>
+    </View>
 
       {showEmpty ? (
         <>

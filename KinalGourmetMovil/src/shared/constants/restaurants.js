@@ -1,60 +1,61 @@
 import { StyleSheet } from 'react-native';
-export const colors = {
-  bg:          '#111111',  
-  cardSurface: '#1C1C1C',   
-  chipSurface: '#232323',   
 
-  inkDark:  '#FFFFFF',      
-  inkMid:   '#F0F0F0',       
-  muted:    '#888888',       
+export const colors = {
+  bg:          '#FFFFFF',
+  cardSurface: '#FFFFFF',
+  chipSurface: '#F5F5F5',
+
+  inkDark:  '#111111',
+  inkMid:   '#222222',
+  muted:    '#888888',
 
   accent:     '#F97316',
   accentDark: '#EA6A0A',
-  accentTint: '#2D1A0A',    
+  accentTint: '#FFF4ED',
 
-  tagBg:     '#242424',
-  tagText:   '#CCCCCC',
-  tagBorder: 'rgba(255,255,255,0.1)',
+  tagBg:     '#F5F5F5',
+  tagText:   '#444444',
+  tagBorder: 'rgba(0,0,0,0.08)',
 
-  newBg:   '#2D1A0A',
+  newBg:   '#FFF4ED',
   newText: '#F97316',
 
   priceColor: '#F97316',
 
   dotLit: '#F97316',
-  dotOut: 'rgba(255,255,255,0.15)',
+  dotOut: 'rgba(0,0,0,0.12)',
 
-  border:    'rgba(255,255,255,0.07)',
-  borderMid: 'rgba(255,255,255,0.12)',
+  border:    'rgba(0,0,0,0.08)',
+  borderMid: 'rgba(0,0,0,0.12)',
 
   danger:  '#EF4444',
   success: '#22C55E',
 
   overlayTop:    'rgba(0,0,0,0)',
-  overlayMid:    'rgba(0,0,0,0.55)',
-  overlayBottom: 'rgba(0,0,0,0.88)',
+  overlayMid:    'rgba(0,0,0,0.45)',
+  overlayBottom: 'rgba(0,0,0,0.75)',
 
-  inkCoffee:      '#111111',
-  cream:          '#FFFFFF',
+  inkCoffee:      '#FFFFFF',
+  cream:          '#111111',
   terracotta:     '#F97316',
   terracottaDark: '#EA6A0A',
-  leather:        '#AAAAAA',
-  surface:        '#111111',
+  leather:        '#888888',
+  surface:        '#FFFFFF',
   gold:           '#F97316',
-  goldLight:      '#2D1A0A',
+  goldLight:      '#FFF4ED',
   goldDark:       '#EA6A0A',
   candleLit:      '#F97316',
-  candleOut:      'rgba(255,255,255,0.15)',
-  borderOnDark:   'rgba(255,255,255,0.12)',
+  candleOut:      'rgba(0,0,0,0.12)',
+  borderOnDark:   'rgba(0,0,0,0.12)',
 };
 
 export const fonts = {
-  display:      'Fraunces_600SemiBold',
-  displayItalic:'Fraunces_500Medium_Italic',
-  body:         'Inter_400Regular',
-  bodyMedium:   'Inter_500Medium',
-  bodySemiBold: 'Inter_600SemiBold',
-  label:        'Inter_700Bold',
+  display:       'Fraunces_600SemiBold',
+  displayItalic: 'Fraunces_500Medium_Italic',
+  body:          'Inter_400Regular',
+  bodyMedium:    'Inter_500Medium',
+  bodySemiBold:  'Inter_600SemiBold',
+  label:         'Inter_700Bold',
 };
 
 export const radii = {
@@ -75,32 +76,32 @@ export const spacing = {
 
 export const shadow = {
   card: {
-    shadowColor:   '#F97316',
-    shadowOffset:  { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius:  8,
-    elevation:     4,
+    shadowColor:   '#000000',
+    shadowOffset:  { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius:  6,
+    elevation:     2,
   },
   chip: {
     shadowColor:   '#000000',
     shadowOffset:  { width: 0, height: 1 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.06,
     shadowRadius:  3,
-    elevation:     2,
+    elevation:     1,
   },
 };
 
 export const FEATURE_MAP = {
-  hasDelivery:           { label: 'Delivery',       icon: '🛵' },
-  hasTakeout:            { label: 'Para llevar',    icon: '🥡' },
-  acceptsReservations:   { label: 'Reservaciones',  icon: '📅' },
-  hasParking:            { label: 'Parqueo',        icon: '🅿️' },
-  hasOutdoorSeating:     { label: 'Terraza',        icon: '🌿' },
-  hasWifi:               { label: 'Wifi',           icon: '📶' },
-  isWheelchairAccessible:{ label: 'Accesible',      icon: '♿' },
-  allowsPets:            { label: 'Mascotas',       icon: '🐾' },
-  hasLiveMusic:          { label: 'Música en vivo', icon: '🎵' },
-  hasAirConditioning:    { label: 'A/C',            icon: '❄️' },
+  hasDelivery:            { label: 'Delivery',       icon: '🛵' },
+  hasTakeout:             { label: 'Para llevar',    icon: '🥡' },
+  acceptsReservations:    { label: 'Reservaciones',  icon: '📅' },
+  hasParking:             { label: 'Parqueo',        icon: '🅿️' },
+  hasOutdoorSeating:      { label: 'Terraza',        icon: '🌿' },
+  hasWifi:                { label: 'Wifi',           icon: '📶' },
+  isWheelchairAccessible: { label: 'Accesible',      icon: '♿' },
+  allowsPets:             { label: 'Mascotas',       icon: '🐾' },
+  hasLiveMusic:           { label: 'Música en vivo', icon: '🎵' },
+  hasAirConditioning:     { label: 'A/C',            icon: '❄️' },
 };
 
 export const FEATURE_CHIPS = [
@@ -114,7 +115,6 @@ export const FEATURE_CHIPS = [
 export const cardStyles = StyleSheet.create({
   card: {
     flexDirection:   'row',
-    height:          112,
     backgroundColor: colors.cardSurface,
     borderRadius:    radii.lg,
     overflow:        'hidden',
@@ -123,21 +123,20 @@ export const cardStyles = StyleSheet.create({
   },
 
   imageWrap: {
-    width:           112,
     flexShrink:      0,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#E5E5E5',
     position:        'relative',
   },
   catBadge: {
     position:          'absolute',
     top:               8,
     left:              8,
-    backgroundColor:   'rgba(0,0,0,0.75)',
+    backgroundColor:   'rgba(0,0,0,0.55)',
     paddingVertical:   3,
     paddingHorizontal: 8,
     borderRadius:      radii.pill,
     borderWidth:       0.5,
-    borderColor:       'rgba(249,115,22,0.4)',
+    borderColor:       'rgba(249,115,22,0.5)',
   },
   catBadgeText: {
     fontFamily:    fonts.label,
@@ -213,7 +212,7 @@ export const cardStyles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   tag: {
-    backgroundColor: colors.tagBg,
+    backgroundColor:   colors.tagBg,
     paddingVertical:   3,
     paddingHorizontal: 7,
     borderRadius:      radii.pill,
@@ -272,7 +271,7 @@ export const chipStyles = StyleSheet.create({
     fontFamily:    fonts.label,
     fontSize:      11,
     letterSpacing: 0.5,
-    color:         colors.muted,
+    color:         '#666666',
     textTransform: 'uppercase',
   },
   labelActive: {
@@ -288,26 +287,34 @@ export const styles = StyleSheet.create({
 
   header: {
     paddingHorizontal: spacing.lg,
-    paddingTop:        spacing.sm,
+    paddingTop:        spacing.lg,
     paddingBottom:     spacing.md,
-  },
-  eyebrow: {
-    fontFamily:    fonts.label,
-    fontSize:      11,
-    letterSpacing: 1,
-    color:         colors.accent,
-    marginBottom:  4,
-    textTransform: 'uppercase',
+    backgroundColor:  '#FFFFFF',
   },
   title: {
     fontFamily: fonts.display,
-    fontSize:   24,
-    color:      colors.inkDark,
+    fontSize:   26,
+    color:      '#111111',
+    lineHeight: 32,
+  },
+  titleSmall: {
+    fontSize:   22,
+    lineHeight: 28,
+  },
+  titleAccent: {
+    fontFamily: fonts.displayItalic,
+    color:      colors.accent,
+  },
+  subtitle: {
+    fontFamily: fonts.body,
+    fontSize:   13,
+    color:      '#888888',
+    marginTop:  4,
   },
 
   chipRow: {
-    paddingHorizontal: spacing.lg,
-    gap:               spacing.sm,
+    paddingHorizontal: spacing.md,
+    gap:               6,
     paddingBottom:     spacing.sm,
   },
   chipScroll: {
@@ -315,7 +322,7 @@ export const styles = StyleSheet.create({
   },
 
   list: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
     paddingTop:        spacing.md,
     paddingBottom:     spacing.xxl,
     gap:               spacing.sm,
@@ -344,7 +351,7 @@ export const styles = StyleSheet.create({
   emptyTitle: {
     fontFamily:   fonts.display,
     fontSize:     18,
-    color:        colors.inkDark,
+    color:        '#111111',
     marginBottom: 4,
   },
   emptySubtitle: {
