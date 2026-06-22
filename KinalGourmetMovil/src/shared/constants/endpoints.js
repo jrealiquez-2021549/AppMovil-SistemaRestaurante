@@ -2,11 +2,11 @@ import { Platform } from 'react-native';
 
 const AUTH_BASE = Platform.OS === 'web'
   ? 'http://localhost:3005/api'
-  : 'http://192.168.1.100:3005/api';   
+  : 'http://192.168.1.100:3005/api';
 
 const RESTAURANTE_BASE = Platform.OS === 'web'
   ? 'http://localhost:3006'
-  : 'http://192.168.1.100:3006';      
+  : 'http://192.168.1.100:3006';
 
 export const AUTH_ENDPOINTS = {
   LOGIN:           `${AUTH_BASE}/auth/login`,
@@ -19,28 +19,28 @@ export const AUTH_ENDPOINTS = {
 
 export const RESTAURANTE_ENDPOINTS = {
   // Restaurantes
-  RESTAURANTS:        `${RESTAURANTE_BASE}/api/restaurants`,
-  RESTAURANT_BY_ID:   (id) => `${RESTAURANTE_BASE}/api/restaurants/${id}`,
+  RESTAURANTS:        `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/restaurants`,
+  RESTAURANT_BY_ID:   (id) => `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/restaurants/${id}`,
 
   // Platillos
-  DISHES:             `${RESTAURANTE_BASE}/api/dishes`,
-  DISH_BY_ID:         (id) => `${RESTAURANTE_BASE}/api/dishes/${id}`,
+  DISHES:             `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/dishes`,
+  DISH_BY_ID:         (id) => `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/dishes/${id}`,
 
   // Órdenes
-  ORDERS:             `${RESTAURANTE_BASE}/api/orders`,
-  ORDER_BY_ID:        (id) => `${RESTAURANTE_BASE}/api/orders/${id}`,
-  MY_ORDERS:          `${RESTAURANTE_BASE}/api/orders/my-orders`,
+  ORDERS:             `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/orders`,
+  ORDER_BY_ID:        (id) => `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/orders/${id}`,
+  MY_ORDERS:          `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/orders/my-orders`,
 
   // Reservaciones
-  RESERVATIONS:       `${RESTAURANTE_BASE}/api/reservations`,
-  MY_RESERVATIONS:    `${RESTAURANTE_BASE}/api/reservations/my-reservations`,
+  RESERVATIONS:       `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/reservations`,
+  MY_RESERVATIONS:    `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/reservations/my-reservations`,
 
   // Cupones
-  CUPONES:            `${RESTAURANTE_BASE}/api/coupons`,
-  VALIDATE_CUPON:     `${RESTAURANTE_BASE}/api/coupons/validate`,
+  CUPONES:            `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/coupons`,
+  VALIDATE_CUPON:     `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/coupons/validate`,
 
   // Reseñas
-  REVIEWS:            `${RESTAURANTE_BASE}/api/reviews`,
+  REVIEWS:            `${RESTAURANTE_BASE}/kinalGourmetHouse/v1/reviews`,
 };
 
 export { AUTH_BASE, RESTAURANTE_BASE };

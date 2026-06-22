@@ -1,30 +1,33 @@
-import axios from 'axios';
-import { RESTAURANTE_BASE } from '../constants/endpoints';
-import * as SecureStore from 'expo-secure-store';
+import axios from "axios";
+import { Platform } from "react-native";
 
-// ─── Instancia de Axios para el servicio de Restaurante ──────────────────────
+const BASE_URL = "http://localhost:3006/kinalGourmetHouse/v1";
+
 const restauranteClient = axios.create({
-  baseURL: RESTAURANTE_BASE,
+  baseURL: BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-  timeout: 10000,
 });
 
-// ─── Interceptor: adjunta el token automáticamente ───────────────────────────
-restauranteClient.interceptors.request.use(
-  async (config) => {
-    try {
-      const token = await SecureStore.getItemAsync('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    } catch (_) {
-      // Si SecureStore falla no bloqueamos la petición
+// Interceptor: adjunta el token antes de cada petición
+restauranteClient.interceptors.request.use(async (config) => {
+  try {
+    let token = null;
+
+    if (Platform.OS === "web") {
+      token = localStorage.getItem("token");
+    } else {
+      const SecureStore = await import("expo-secure-store");
+      token = await SecureStore.getItemAsync("token");
     }
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch (_) {}
+
+  return config;
+});
 
 export default restauranteClient;

@@ -6,6 +6,7 @@ export const useRestaurantStore = create((set, get) => ({
     restaurants: [],
     loading: false,
     error: null,
+    requiresAuth: false,
 
     selectedRestaurant: null,
     loadingSelected: false,
@@ -47,11 +48,16 @@ export const useRestaurantStore = create((set, get) => ({
 
     fetchRestaurants: async () => {
         try {
-            set({ loading: true, error: null });
+            set({ loading: true, error: null, requiresAuth: false });
             const res = await restauranteClient.get(RESTAURANTE_ENDPOINTS.RESTAURANTS);
-            const data = res.data?.data ?? [];
+            const data = res.data?.data ?? [];  // ✅ único cambio
             set({ restaurants: Array.isArray(data) ? data : [], loading: false });
         } catch (err) {
+            if (err.response?.status === 401) {
+                // Esperado: el catálogo requiere sesión. No es un error de red/servidor.
+                set({ requiresAuth: true, loading: false, error: null });
+                return;
+            }
             set({
                 error: err.response?.data?.message || "Error al cargar restaurantes",
                 loading: false,
