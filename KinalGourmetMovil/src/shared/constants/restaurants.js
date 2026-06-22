@@ -1,3 +1,4 @@
+import { StyleSheet } from "react-native";
 export const colors = {
   inkCoffee:   '#1A1410', 
   cream:       '#FAF6F0', 
@@ -62,3 +63,71 @@ export const shadow = {
     elevation: 2,
   },
 };
+
+export const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: colors.cream,
+  },
+  header: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+  },
+  eyebrow: {
+    fontFamily: fonts.label,
+    fontSize: 11,
+    letterSpacing: 1,
+    color: colors.terracotta,
+    marginBottom: 4,
+  },
+  title: {
+    fontFamily: fonts.display,
+    fontSize: 24,
+    color: colors.inkCoffee,
+  },
+
+  chipRow: {
+    paddingHorizontal: spacing.lg,
+    gap: spacing.sm,
+    paddingBottom: spacing.sm,
+  },
+
+  grid: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xxl,
+  },
+  gridRow: {
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
+
+  centerFill: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  errorText: {
+    fontFamily: fonts.body,
+    color: colors.danger,
+    textAlign: 'center',
+  },
+  emptyIcon: {
+    fontSize: 32,
+    marginBottom: spacing.sm,
+  },
+  emptyTitle: {
+    fontFamily: fonts.display,
+    fontSize: 18,
+    color: colors.inkCoffee,
+    marginBottom: 4,
+  },
+  emptySubtitle: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.leather,
+    textAlign: 'center',
+  },
+});
