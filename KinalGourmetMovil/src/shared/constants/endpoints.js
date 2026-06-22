@@ -1,17 +1,13 @@
 import { Platform } from 'react-native';
 
-// ─── URLs base por servicio ──────────────────────────────────────────────────
-// En web (emulador) usamos localhost; en dispositivo físico hay que poner la IP
-// de la máquina donde corre el backend (ajustar según red).
 const AUTH_BASE = Platform.OS === 'web'
   ? 'http://localhost:3005/api'
-  : 'http://192.168.1.100:3005/api';   // ← cambia esta IP por la tuya
+  : 'http://192.168.1.100:3005/api';   
 
 const RESTAURANTE_BASE = Platform.OS === 'web'
   ? 'http://localhost:3006'
-  : 'http://192.168.1.100:3006';       // ← cambia esta IP por la tuya
+  : 'http://192.168.1.100:3006';      
 
-// ─── Auth (puerto 3005) ──────────────────────────────────────────────────────
 export const AUTH_ENDPOINTS = {
   LOGIN:           `${AUTH_BASE}/auth/login`,
   REGISTER:        `${AUTH_BASE}/auth/register`,
@@ -21,7 +17,6 @@ export const AUTH_ENDPOINTS = {
   RESET_PASSWORD:  (token) => `${AUTH_BASE}/auth/reset-password/${token}`,
 };
 
-// ─── Restaurante (puerto 3006) ───────────────────────────────────────────────
 export const RESTAURANTE_ENDPOINTS = {
   // Restaurantes
   RESTAURANTS:        `${RESTAURANTE_BASE}/api/restaurants`,
