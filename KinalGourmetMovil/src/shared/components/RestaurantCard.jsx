@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fonts, radii, spacing, shadow } from '../theme';
+import { colors, fonts, radii, spacing, shadow } from '../constants/restaurants';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const CARD_GAP = spacing.md;

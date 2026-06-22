@@ -2,7 +2,7 @@ import { create } from "zustand";
 import restauranteClient from "../api/restauranteClient";
 import { RESTAURANTE_ENDPOINTS } from "../constants/endpoints";
 
-export const useRestaurantClientStore = create((set, get) => ({
+export const useRestaurantStore = create((set, get) => ({
     restaurants: [],
     loading: false,
     error: null,

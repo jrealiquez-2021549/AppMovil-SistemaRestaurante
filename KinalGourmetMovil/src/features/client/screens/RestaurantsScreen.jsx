@@ -9,14 +9,11 @@ import {
   RefreshControl,
   SafeAreaView,
 } from 'react-native';
-import { useRestaurantClientStore } from '../store/useRestaurantClientStore';
-import RestaurantCard from '../components/RestaurantCard';
-import FilterChip from '../components/FilterChip';
+import { useRestaurantStore } from '../../../shared/store/useRestaurantStore';
+import RestaurantCard from '../../../shared/components/RestaurantCard';
+import FilterChip from '../../../shared/components/FilterChip';
 import { colors, fonts, spacing, styles } from '../../../shared/constants/restaurants';
 
-// ── Features disponibles ─────────────────────────────────────────────────────
-// TODO: ajustar estas keys cuando se confirme el nombre real de cada campo
-// dentro de restaurant.features en el backend (placeholders por ahora).
 const FEATURES = [
   { key: 'delivery',     label: 'Delivery', icon: '🛵' },
   { key: 'reservations', label: 'Reservas', icon: '📅' },
@@ -25,7 +22,7 @@ const FEATURES = [
   { key: 'outdoor',      label: 'Exterior', icon: '🌿' },
 ];
 
-export default function ExploreScreen({ navigation }) {
+export default function RestaurantsScreen({ navigation }) {
   const {
     restaurants,
     loading,
@@ -38,7 +35,7 @@ export default function ExploreScreen({ navigation }) {
     getCategoryLabel,
     setFilterCategory,
     setFilterFeature,
-  } = useRestaurantClientStore();
+  } = useRestaurantStore();
 
   useEffect(() => {
     fetchRestaurants();

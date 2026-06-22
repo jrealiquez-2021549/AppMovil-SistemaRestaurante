@@ -10,10 +10,7 @@ import {
 import { useAuthStore } from '../../../shared/store/authStore';
 import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../../../shared/constants/theme';
 
-// ─── HomeScreen (Cliente) ─────────────────────────────────────────────────────
-// Pantalla temporal mientras se implementa la vista completa del cliente.
-// Muestra bienvenida y acceso rápido a las funcionalidades principales.
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const { user, logout, getProfile } = useAuthStore();
 
   useEffect(() => {
@@ -42,31 +39,36 @@ const HomeScreen = () => {
         </View>
 
         {/* ── Banner principal ─────────────────────────────────────────────── */}
-        <View style={s.banner}>
+        <TouchableOpacity
+          style={s.banner}
+          onPress={() => navigation.navigate('Restaurantes')}
+          activeOpacity={0.85}
+        >
           <Text style={s.bannerEmoji}>🍽</Text>
           <View style={{ flex: 1 }}>
             <Text style={s.bannerTitle}>Kinal Gourmet House</Text>
             <Text style={s.bannerSub}>Explora restaurantes y haz tu pedido</Text>
           </View>
-        </View>
+          <Text style={s.bannerArrow}>→</Text>
+        </TouchableOpacity>
 
         {/* ── Accesos rápidos ──────────────────────────────────────────────── */}
         <Text style={s.sectionTitle}>Accesos rápidos</Text>
         <View style={s.grid}>
           {QUICK_ACTIONS.map((item) => (
-            <View key={item.label} style={s.gridItem}>
+            <TouchableOpacity
+              key={item.label}
+              style={s.gridItem}
+              onPress={() => {
+                if (item.tab) navigation.navigate(item.tab);
+              }}
+              disabled={!item.tab}
+              activeOpacity={0.85}
+            >
               <Text style={s.gridEmoji}>{item.emoji}</Text>
               <Text style={s.gridLabel}>{item.label}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
-        </View>
-
-        {/* ── Nota desarrollo ──────────────────────────────────────────────── */}
-        <View style={s.devNote}>
-          <Text style={s.devNoteText}>
-            🚧 Esta pantalla está en desarrollo. Las funcionalidades del cliente
-            (restaurantes, órdenes, reservaciones) se implementarán en la siguiente fase.
-          </Text>
         </View>
 
         {/* ── Cerrar sesión ─────────────────────────────────────────────────── */}
@@ -79,11 +81,14 @@ const HomeScreen = () => {
   );
 };
 
+// "tab" es el name exacto del Tab.Screen en ClientTabs. Las que no tienen
+// tab todavía (carrito, pedidos, reservaciones) quedan deshabilitadas hasta
+// que esas pantallas existan, en vez de simular una navegación que no pasa nada.
 const QUICK_ACTIONS = [
-  { emoji: '🏠', label: 'Restaurantes' },
-  { emoji: '🛒', label: 'Mi carrito' },
-  { emoji: '📋', label: 'Mis pedidos' },
-  { emoji: '📅', label: 'Reservaciones' },
+  { emoji: '🏠', label: 'Restaurantes', tab: 'Restaurantes' },
+  { emoji: '🛒', label: 'Mi carrito', tab: null },
+  { emoji: '📋', label: 'Mis pedidos', tab: 'Mis Pedidos' },
+  { emoji: '📅', label: 'Reservaciones', tab: null },
 ];
 
 const s = StyleSheet.create({
@@ -152,6 +157,10 @@ const s = StyleSheet.create({
     fontSize: 13,
     color: COLORS.gray500,
   },
+  bannerArrow: {
+    fontSize: 20,
+    color: COLORS.primary,
+  },
 
   // Grid
   sectionTitle: {
@@ -182,21 +191,6 @@ const s = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.gray700,
     textAlign: 'center',
-  },
-
-  // Nota de desarrollo
-  devNote: {
-    backgroundColor: COLORS.warningLight,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: 'rgba(217,119,6,0.3)',
-    marginBottom: SPACING.lg,
-  },
-  devNoteText: {
-    fontSize: 13,
-    color: COLORS.warning,
-    lineHeight: 20,
   },
 
   // Logout
