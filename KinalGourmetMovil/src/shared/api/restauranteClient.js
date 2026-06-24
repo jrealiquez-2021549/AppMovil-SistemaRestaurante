@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Platform } from "react-native";
 
-const BASE_URL = "http://localhost:3006/kinalGourmetHouse/v1";
+const BASE_URL = "http://192.168.0.4:3006/kinalGourmetHouse/v1";
 
 const restauranteClient = axios.create({
   baseURL: BASE_URL,

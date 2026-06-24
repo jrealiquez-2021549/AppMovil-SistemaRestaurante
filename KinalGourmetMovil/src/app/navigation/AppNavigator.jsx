@@ -3,7 +3,7 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useEffect } from 'react';
 
 import AuthStack   from './AuthStack';
-import ClientTabs  from './ClientTabs';
+import ClientStack from './ClientStack';   // ← cambió
 
 import { useAuthStore } from '../../shared/store/authStore';
 import { COLORS } from '../../shared/constants/theme';
@@ -13,12 +13,10 @@ const AppNavigator = () => {
   const isHydrated      = useAuthStore((state) => state._hasHydrated);
   const restoreSession  = useAuthStore((state) => state.restoreSession);
 
-  // Restaurar sesión al arrancar la app
   useEffect(() => {
     restoreSession();
   }, []);
 
-  // Pantalla de carga mientras se verifica el token guardado
   if (!isHydrated) {
     return (
       <View style={s.loading}>
@@ -29,7 +27,7 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <ClientTabs /> : <AuthStack />}
+      {isAuthenticated ? <ClientStack /> : <AuthStack />}
     </NavigationContainer>
   );
 };
@@ -39,7 +37,7 @@ const s = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1C0A00', // mismo dark bg de auth para transición suave
+    backgroundColor: '#1C0A00',
   },
 });
 
