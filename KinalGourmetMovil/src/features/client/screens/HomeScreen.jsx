@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useAuthStore } from '../../../shared/store/authStore';
-import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../../../shared/constants/theme';
 
 const ORANGE = '#E8650A';
 const DARK   = '#1A1A1A';
@@ -17,17 +16,10 @@ const CREAM  = '#F5F3EF';
 const MUTED  = '#8A8680';
 
 const QUICK_ACTIONS = [
-  { icon: 'home',       label: 'Restaurantes', tab: 'Restaurantes' },
+  { icon: 'home',          label: 'Restaurantes', tab: 'Restaurantes' },
   { icon: 'shopping-cart', label: 'Mi carrito',   tab: null },
-  { icon: 'file-text',  label: 'Mis pedidos',  tab: 'Mis Pedidos' },
-  { icon: 'calendar',   label: 'Reservaciones',tab: null },
-];
-
-const TAB_ITEMS = [
-  { icon: 'home',      label: 'Inicio',        tab: 'Inicio' },
-  { icon: 'compass',   label: 'Restaurantes',  tab: 'Restaurantes' },
-  { icon: 'file-text', label: 'Pedidos',       tab: 'Mis Pedidos' },
-  { icon: 'user',      label: 'Perfil',        tab: 'Perfil' },
+  { icon: 'file-text',     label: 'Mis pedidos',  tab: 'Mis Pedidos' },
+  { icon: 'calendar',      label: 'Reservaciones', tab: null },
 ];
 
 const HomeScreen = ({ navigation }) => {
@@ -51,8 +43,13 @@ const HomeScreen = ({ navigation }) => {
         {/* ── Header oscuro ─────────────────────────────────────── */}
         <View style={s.header}>
           <View style={s.headerTop}>
-            <Text style={s.wordmark}>Kinal<Text style={s.wordmarkDot}>.</Text></Text>
-            <TouchableOpacity style={s.avatar} onPress={() => navigation.navigate('Perfil')}>
+            <Text style={s.wordmark}>
+              Kinal<Text style={s.wordmarkDot}>.</Text>
+            </Text>
+            <TouchableOpacity
+              style={s.avatar}
+              onPress={() => navigation.navigate('Perfil')}
+            >
               <Text style={s.avatarText}>{initial}</Text>
             </TouchableOpacity>
           </View>
@@ -95,11 +92,7 @@ const HomeScreen = ({ navigation }) => {
                   activeOpacity={0.85}
                 >
                   <View style={[s.gridIcon, isActive && s.gridIconActive]}>
-                    <Feather
-                      name={item.icon}
-                      size={20}
-                      color={ORANGE}
-                    />
+                    <Feather name={item.icon} size={20} color={ORANGE} />
                   </View>
                   <Text style={[s.gridLabel, isActive && s.gridLabelActive]}>
                     {item.label}
@@ -108,6 +101,16 @@ const HomeScreen = ({ navigation }) => {
               );
             })}
           </View>
+
+          {/* ── Cerrar sesión ─────────────────────────────────────── */}
+          <TouchableOpacity
+            style={s.logoutBtn}
+            onPress={logout}
+            activeOpacity={0.7}
+          >
+            <Feather name="log-out" size={14} color="#EF4444" />
+            <Text style={s.logoutText}>Cerrar sesión</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -115,7 +118,7 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: CREAM },
+  root:   { flex: 1, backgroundColor: CREAM },
   scroll: { paddingBottom: 80 },
 
   // Header
@@ -133,7 +136,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  wordmark: { fontSize: 20, fontWeight: '800', color: '#fff', letterSpacing: -0.5 },
+  wordmark:    { fontSize: 20, fontWeight: '800', color: '#fff', letterSpacing: -0.5 },
   wordmarkDot: { color: ORANGE },
   avatar: {
     width: 38,
@@ -144,8 +147,8 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: { color: '#fff', fontSize: 15, fontWeight: '700' },
-  greeting: { fontSize: 12, color: 'rgba(255,255,255,0.45)', marginBottom: 4 },
-  name: { fontSize: 22, fontWeight: '800', color: '#fff', letterSpacing: -0.5 },
+  greeting:   { fontSize: 12, color: 'rgba(255,255,255,0.45)', marginBottom: 4 },
+  name:       { fontSize: 22, fontWeight: '800', color: '#fff', letterSpacing: -0.5 },
   nameAccent: { color: ORANGE },
 
   // Body
@@ -171,9 +174,9 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bannerText: { flex: 1 },
+  bannerText:  { flex: 1 },
   bannerTitle: { fontSize: 14, fontWeight: '700', color: DARK },
-  bannerSub: { fontSize: 11, color: MUTED, marginTop: 2 },
+  bannerSub:   { fontSize: 11, color: MUTED, marginTop: 2 },
   bannerArrow: {
     width: 32,
     height: 32,
@@ -222,13 +225,23 @@ const s = StyleSheet.create({
   gridIconActive: {
     backgroundColor: 'rgba(232,101,10,0.18)',
   },
-  gridLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: DARK,
-    textAlign: 'center',
-  },
+  gridLabel:       { fontSize: 12, fontWeight: '600', color: DARK, textAlign: 'center' },
   gridLabelActive: { color: '#fff' },
+
+  // Logout
+  logoutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 14,
+    marginTop: 4,
+  },
+  logoutText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#EF4444',
+  },
 });
 
 export default HomeScreen;
