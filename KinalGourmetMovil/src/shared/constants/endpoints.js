@@ -2,11 +2,11 @@ import { Platform } from 'react-native';
 
 const AUTH_BASE = Platform.OS === 'web'
   ? 'http://localhost:3005/api'
-  : 'http://192.168.1.100:3005/api';
+  : 'http://192.168.0.4:3005/api';
 
 const RESTAURANTE_BASE = Platform.OS === 'web'
   ? 'http://localhost:3006'
-  : 'http://192.168.1.100:3006';
+  : 'http://192.168.0.4:3006';
 
 export const AUTH_ENDPOINTS = {
   LOGIN:           `${AUTH_BASE}/auth/login`,

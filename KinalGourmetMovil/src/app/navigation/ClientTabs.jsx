@@ -1,39 +1,38 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS } from '../../shared/constants/theme';
+import { Feather } from '@expo/vector-icons';
 import HomeScreen from '../../features/client/screens/HomeScreen';
 import RestaurantsScreen from '../../features/client/screens/RestaurantsScreen';
 
 const Tab = createBottomTabNavigator();
 
-// Íconos en texto (sin dependencia externa de iconos)
-const tabIcon = (emoji, focused) => (
+const ORANGE = '#E8650A';
+const DARK   = '#1A1A1A';
+const MUTED  = '#8A8680';
+
+const TabIcon = ({ name, focused }) => (
   <View style={[ti.wrapper, focused && ti.wrapperActive]}>
-    <Text style={ti.emoji}>{emoji}</Text>
+    <Feather name={name} size={16} color={focused ? '#fff' : MUTED} />
   </View>
 );
 
 const ti = StyleSheet.create({
   wrapper: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 44,
-    height: 32,
-    borderRadius: 10,
   },
   wrapperActive: {
-    backgroundColor: COLORS.primaryBg,
-  },
-  emoji: {
-    fontSize: 22,
+    backgroundColor: ORANGE,
   },
 });
 
-// Pantallas placeholder para fases futuras
 const PlaceholderScreen = ({ route }) => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.gray50 }}>
-    <Text style={{ fontSize: 40, marginBottom: 12 }}>🚧</Text>
-    <Text style={{ fontSize: 16, fontWeight: '700', color: COLORS.gray700 }}>
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F3EF' }}>
+    <Feather name="tool" size={40} color={MUTED} style={{ marginBottom: 12 }} />
+    <Text style={{ fontSize: 16, fontWeight: '700', color: DARK }}>
       {route.name} — Próximamente
     </Text>
   </View>
@@ -44,48 +43,42 @@ const ClientTabs = () => (
     screenOptions={{
       headerShown: false,
       tabBarStyle: {
-        backgroundColor: COLORS.white,
-        borderTopColor: COLORS.gray100,
+        backgroundColor: '#fff',
+        borderTopColor: 'rgba(0,0,0,0.07)',
         borderTopWidth: 1,
-        height: 64,
-        paddingBottom: 8,
-        paddingTop: 4,
+        height: 70,
+        paddingBottom: 12,
+        paddingTop: 8,
       },
-      tabBarActiveTintColor:   COLORS.primary,
-      tabBarInactiveTintColor: COLORS.gray400,
+      tabBarActiveTintColor:   ORANGE,
+      tabBarInactiveTintColor: MUTED,
       tabBarLabelStyle: {
-        fontSize: 11,
+        fontSize: 9,
         fontWeight: '600',
+        letterSpacing: 0.3,
+        marginTop: 2,
       },
     }}
   >
     <Tab.Screen
       name="Inicio"
       component={HomeScreen}
-      options={{
-        tabBarIcon: ({ focused }) => tabIcon('🏠', focused),
-      }}
+      options={{ tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} /> }}
     />
     <Tab.Screen
       name="Restaurantes"
       component={RestaurantsScreen}
-      options={{
-        tabBarIcon: ({ focused }) => tabIcon('🍽', focused),
-      }}
+      options={{ tabBarIcon: ({ focused }) => <TabIcon name="compass" focused={focused} /> }}
     />
     <Tab.Screen
       name="Mis Pedidos"
       component={PlaceholderScreen}
-      options={{
-        tabBarIcon: ({ focused }) => tabIcon('📋', focused),
-      }}
+      options={{ tabBarIcon: ({ focused }) => <TabIcon name="file-text" focused={focused} /> }}
     />
     <Tab.Screen
       name="Perfil"
       component={PlaceholderScreen}
-      options={{
-        tabBarIcon: ({ focused }) => tabIcon('👤', focused),
-      }}
+      options={{ tabBarIcon: ({ focused }) => <TabIcon name="user" focused={focused} /> }}
     />
   </Tab.Navigator>
 );
