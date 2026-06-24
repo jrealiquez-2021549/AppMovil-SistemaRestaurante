@@ -7,8 +7,28 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useAuthStore } from '../../../shared/store/authStore';
 import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../../../shared/constants/theme';
+
+const ORANGE = '#E8650A';
+const DARK   = '#1A1A1A';
+const CREAM  = '#F5F3EF';
+const MUTED  = '#8A8680';
+
+const QUICK_ACTIONS = [
+  { icon: 'home',       label: 'Restaurantes', tab: 'Restaurantes' },
+  { icon: 'shopping-cart', label: 'Mi carrito',   tab: null },
+  { icon: 'file-text',  label: 'Mis pedidos',  tab: 'Mis Pedidos' },
+  { icon: 'calendar',   label: 'Reservaciones',tab: null },
+];
+
+const TAB_ITEMS = [
+  { icon: 'home',      label: 'Inicio',        tab: 'Inicio' },
+  { icon: 'compass',   label: 'Restaurantes',  tab: 'Restaurantes' },
+  { icon: 'file-text', label: 'Pedidos',       tab: 'Mis Pedidos' },
+  { icon: 'user',      label: 'Perfil',        tab: 'Perfil' },
+];
 
 const HomeScreen = ({ navigation }) => {
   const { user, logout, getProfile } = useAuthStore();
@@ -17,192 +37,198 @@ const HomeScreen = ({ navigation }) => {
     if (!user) getProfile();
   }, []);
 
+  const firstName = user?.name ? user.name.split(' ')[0] : '';
+  const initial   = user?.name ? user.name[0].toUpperCase() : '?';
+
   return (
     <View style={s.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+      <StatusBar barStyle="light-content" backgroundColor={DARK} />
 
       <ScrollView
         contentContainerStyle={s.scroll}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Header ──────────────────────────────────────────────────────── */}
+        {/* ── Header oscuro ─────────────────────────────────────── */}
         <View style={s.header}>
-          <View>
-            <Text style={s.greeting}>¡Hola{user?.name ? `, ${user.name.split(' ')[0]}` : ''}! 👋</Text>
-            <Text style={s.subGreeting}>¿Qué quieres ordenar hoy?</Text>
-          </View>
-          <TouchableOpacity style={s.avatarBtn} onPress={logout}>
-            <Text style={s.avatarText}>
-              {user?.name ? user.name[0].toUpperCase() : '?'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* ── Banner principal ─────────────────────────────────────────────── */}
-        <TouchableOpacity
-          style={s.banner}
-          onPress={() => navigation.navigate('Restaurantes')}
-          activeOpacity={0.85}
-        >
-          <Text style={s.bannerEmoji}>🍽</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={s.bannerTitle}>Kinal Gourmet House</Text>
-            <Text style={s.bannerSub}>Explora restaurantes y haz tu pedido</Text>
-          </View>
-          <Text style={s.bannerArrow}>→</Text>
-        </TouchableOpacity>
-
-        {/* ── Accesos rápidos ──────────────────────────────────────────────── */}
-        <Text style={s.sectionTitle}>Accesos rápidos</Text>
-        <View style={s.grid}>
-          {QUICK_ACTIONS.map((item) => (
-            <TouchableOpacity
-              key={item.label}
-              style={s.gridItem}
-              onPress={() => {
-                if (item.tab) navigation.navigate(item.tab);
-              }}
-              disabled={!item.tab}
-              activeOpacity={0.85}
-            >
-              <Text style={s.gridEmoji}>{item.emoji}</Text>
-              <Text style={s.gridLabel}>{item.label}</Text>
+          <View style={s.headerTop}>
+            <Text style={s.wordmark}>Kinal<Text style={s.wordmarkDot}>.</Text></Text>
+            <TouchableOpacity style={s.avatar} onPress={() => navigation.navigate('Perfil')}>
+              <Text style={s.avatarText}>{initial}</Text>
             </TouchableOpacity>
-          ))}
+          </View>
+          <Text style={s.greeting}>Bienvenido de vuelta</Text>
+          <Text style={s.name}>
+            ¡Hola, <Text style={s.nameAccent}>{firstName || 'Usuario'}</Text>! 👋
+          </Text>
         </View>
 
-        {/* ── Cerrar sesión ─────────────────────────────────────────────────── */}
-        <TouchableOpacity style={s.logoutBtn} onPress={logout}>
-          <Text style={s.logoutText}>Cerrar sesión</Text>
-        </TouchableOpacity>
+        <View style={s.body}>
+          {/* ── Banner ────────────────────────────────────────────── */}
+          <TouchableOpacity
+            style={s.banner}
+            onPress={() => navigation.navigate('Restaurantes')}
+            activeOpacity={0.85}
+          >
+            <View style={s.bannerIconWrap}>
+              <Feather name="send" size={20} color={ORANGE} />
+            </View>
+            <View style={s.bannerText}>
+              <Text style={s.bannerTitle}>Kinal Gourmet House</Text>
+              <Text style={s.bannerSub}>Explora restaurantes y haz tu pedido</Text>
+            </View>
+            <View style={s.bannerArrow}>
+              <Feather name="arrow-right" size={16} color="#fff" />
+            </View>
+          </TouchableOpacity>
 
+          {/* ── Accesos rápidos ───────────────────────────────────── */}
+          <Text style={s.sectionLabel}>Accesos rápidos</Text>
+          <View style={s.grid}>
+            {QUICK_ACTIONS.map((item, i) => {
+              const isActive = i === 0;
+              return (
+                <TouchableOpacity
+                  key={item.label}
+                  style={[s.gridItem, isActive && s.gridItemActive]}
+                  onPress={() => item.tab && navigation.navigate(item.tab)}
+                  disabled={!item.tab}
+                  activeOpacity={0.85}
+                >
+                  <View style={[s.gridIcon, isActive && s.gridIconActive]}>
+                    <Feather
+                      name={item.icon}
+                      size={20}
+                      color={ORANGE}
+                    />
+                  </View>
+                  <Text style={[s.gridLabel, isActive && s.gridLabelActive]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
       </ScrollView>
     </View>
   );
 };
 
-// "tab" es el name exacto del Tab.Screen en ClientTabs. Las que no tienen
-// tab todavía (carrito, pedidos, reservaciones) quedan deshabilitadas hasta
-// que esas pantallas existan, en vez de simular una navegación que no pasa nada.
-const QUICK_ACTIONS = [
-  { emoji: '🏠', label: 'Restaurantes', tab: 'Restaurantes' },
-  { emoji: '🛒', label: 'Mi carrito', tab: null },
-  { emoji: '📋', label: 'Mis pedidos', tab: 'Mis Pedidos' },
-  { emoji: '📅', label: 'Reservaciones', tab: null },
-];
-
 const s = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: COLORS.gray50,
-  },
-  scroll: {
-    paddingHorizontal: SPACING.lg,
-    paddingTop: 60,
-    paddingBottom: SPACING.xxl,
-  },
+  root: { flex: 1, backgroundColor: CREAM },
+  scroll: { paddingBottom: 80 },
 
   // Header
   header: {
+    backgroundColor: DARK,
+    paddingHorizontal: 20,
+    paddingTop: 56,
+    paddingBottom: 24,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+  },
+  headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.lg,
+    marginBottom: 16,
   },
-  greeting: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: COLORS.gray900,
-  },
-  subGreeting: {
-    fontSize: 14,
-    color: COLORS.gray500,
-    marginTop: 2,
-  },
-  avatarBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: COLORS.primary,
+  wordmark: { fontSize: 20, fontWeight: '800', color: '#fff', letterSpacing: -0.5 },
+  wordmarkDot: { color: ORANGE },
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: ORANGE,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: {
-    color: COLORS.white,
-    fontSize: 18,
-    fontWeight: '700',
-  },
+  avatarText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  greeting: { fontSize: 12, color: 'rgba(255,255,255,0.45)', marginBottom: 4 },
+  name: { fontSize: 22, fontWeight: '800', color: '#fff', letterSpacing: -0.5 },
+  nameAccent: { color: ORANGE },
+
+  // Body
+  body: { padding: 20 },
 
   // Banner
   banner: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.lg,
-    marginBottom: SPACING.lg,
+    gap: 12,
+    marginBottom: 24,
     borderWidth: 1,
-    borderColor: COLORS.primaryLight,
-    ...SHADOWS.md,
+    borderColor: 'rgba(0,0,0,0.07)',
   },
-  bannerEmoji: { fontSize: 40 },
-  bannerTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: COLORS.gray900,
-    marginBottom: 4,
+  bannerIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FDF0E8',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  bannerSub: {
-    fontSize: 13,
-    color: COLORS.gray500,
-  },
+  bannerText: { flex: 1 },
+  bannerTitle: { fontSize: 14, fontWeight: '700', color: DARK },
+  bannerSub: { fontSize: 11, color: MUTED, marginTop: 2 },
   bannerArrow: {
-    fontSize: 20,
-    color: COLORS.primary,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: ORANGE,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   // Grid
-  sectionTitle: {
-    fontSize: 16,
+  sectionLabel: {
+    fontSize: 11,
     fontWeight: '700',
-    color: COLORS.gray800,
-    marginBottom: SPACING.md,
+    color: MUTED,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 12,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: SPACING.sm,
-    marginBottom: SPACING.lg,
+    gap: 10,
   },
   gridItem: {
-    width: '47%',
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.md,
+    width: '47.5%',
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
     alignItems: 'center',
+    gap: 10,
     borderWidth: 1,
-    borderColor: COLORS.gray100,
-    ...SHADOWS.sm,
+    borderColor: 'rgba(0,0,0,0.07)',
   },
-  gridEmoji: { fontSize: 30, marginBottom: 8 },
+  gridItemActive: {
+    backgroundColor: DARK,
+    borderColor: DARK,
+  },
+  gridIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FDF0E8',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gridIconActive: {
+    backgroundColor: 'rgba(232,101,10,0.18)',
+  },
   gridLabel: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
-    color: COLORS.gray700,
+    color: DARK,
     textAlign: 'center',
   },
-
-  // Logout
-  logoutBtn: {
-    alignItems: 'center',
-    paddingVertical: SPACING.md,
-  },
-  logoutText: {
-    fontSize: 14,
-    color: COLORS.danger,
-    fontWeight: '600',
-  },
+  gridLabelActive: { color: '#fff' },
 });
 
 export default HomeScreen;
