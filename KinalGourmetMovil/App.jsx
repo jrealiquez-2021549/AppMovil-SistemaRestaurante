@@ -1,10 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useEffect } from 'react';
+import { useCartStore } from './src/shared/store/useCartStore';
 
 import AppNavigator from './src/app/navigation/AppNavigator';
 
 export default function App() {
+  const hydrate = useCartStore((s) => s.hydrate);
+
+  useEffect(() => {
+    hydrate();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

@@ -8,6 +8,8 @@ import ClientStack from './ClientStack';   // ← cambió
 import { useAuthStore } from '../../shared/store/authStore';
 import { COLORS } from '../../shared/constants/theme';
 
+import CartDrawer from '../../shared/components/CartDrawer';
+
 const AppNavigator = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isHydrated      = useAuthStore((state) => state._hasHydrated);
@@ -26,8 +28,9 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
+  <NavigationContainer>
       {isAuthenticated ? <ClientStack /> : <AuthStack />}
+      <CartDrawer />   {/* ← aquí, fuera del navigator */}
     </NavigationContainer>
   );
 };
