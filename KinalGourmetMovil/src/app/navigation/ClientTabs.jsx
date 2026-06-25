@@ -2,7 +2,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import HomeScreen from '../../features/client/screens/HomeScreen';
-import RestaurantsScreen from '../../features/client/screens/RestaurantsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -64,11 +63,6 @@ const ClientTabs = () => (
       name="Inicio"
       component={HomeScreen}
       options={{ tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} /> }}
-    />
-    <Tab.Screen
-      name="Restaurantes"
-      component={RestaurantsScreen}
-      options={{ tabBarIcon: ({ focused }) => <TabIcon name="compass" focused={focused} /> }}
     />
     <Tab.Screen
       name="Mis Pedidos"
