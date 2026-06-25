@@ -104,7 +104,8 @@ function UserMenu({ visible, onClose, onAccount, onLogout }) {
 // ── Componente principal ───────────────────────────────────────
 export default function AppHeader({ navigation, dark = true, onCartPress }) {
   const { user, logout } = useAuthStore();
-  const totalItems       = useCartStore((s) => s.getTotalItems());
+  const totalItems = useCartStore((s) => s.getTotalItems());
+  const openCart   = useCartStore((s) => s.openCart);
 
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -123,10 +124,10 @@ export default function AppHeader({ navigation, dark = true, onCartPress }) {
   };
 
   const handleCart = () => {
+    openCart();
     if (onCartPress) {
       onCartPress();
     }
-    // Futura navegación: navigation.navigate('Carrito');
   };
 
   return (

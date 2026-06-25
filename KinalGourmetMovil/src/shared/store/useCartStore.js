@@ -2,9 +2,11 @@
  * useCartStore — KinalGourmetMovil
  * Adaptación del UseCartStore.js del frontend web.
  * Persistencia: AsyncStorage (equivalente a localStorage en móvil).
+ * Incluye lógica de cupones (applyCoupon, removeCoupon, getFinalTotal).
  */
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import restauranteClient from "../api/restauranteClient";
 
 const CART_KEY = "restaurant_cart";
 
@@ -32,12 +34,12 @@ const saveCart = async (state) => {
     await AsyncStorage.setItem(
       CART_KEY,
       JSON.stringify({
-        items:          state.items,
-        restaurantId:   state.restaurantId,
-        restaurantName: state.restaurantName,
-        orderType:      state.orderType,
+        items:           state.items,
+        restaurantId:    state.restaurantId,
+        restaurantName:  state.restaurantName,
+        orderType:       state.orderType,
         deliveryAddress: state.deliveryAddress,
-        deliveryPhone:  state.deliveryPhone,
+        deliveryPhone:   state.deliveryPhone,
       })
     );
   } catch (_) {}
@@ -56,6 +58,13 @@ export const useCartStore = create((set, get) => ({
   ...EMPTY_CART,
   isCartOpen: false,
   _hydrated: false,
+
+  // ── Cupones ───────────────────────────────────────────────
+  appliedCoupon:     null,
+  appliedCouponCode: null,
+  discountAmount:    0,
+  isApplyingCoupon:  false,
+  couponError:       null,
 
   // ── Hidratación desde AsyncStorage ────────────────────────
   hydrate: async () => {
@@ -84,18 +93,68 @@ export const useCartStore = create((set, get) => ({
     saveCart({ ...get(), deliveryPhone: phone });
   },
 
+  // ── Cupones ───────────────────────────────────────────────
+  applyCoupon: async (code, userId, restaurantId) => {
+    set({ isApplyingCoupon: true, couponError: null });
+    const total = get().getTotalPrice();
+
+    try {
+      const response = await restauranteClient.post("/coupons/validate", {
+        code,
+        userId,
+        restaurantId,
+        orderTotal: total,
+      });
+
+      if (response.data.success) {
+        set({
+          appliedCoupon:     response.data.data.coupon,
+          appliedCouponCode: code,
+          discountAmount:    response.data.data.estimatedDiscount,
+          isApplyingCoupon:  false,
+          couponError:       null,
+        });
+        return { success: true, message: "Cupón aplicado" };
+      }
+
+      set({ isApplyingCoupon: false });
+      return { success: false, message: "Cupón inválido" };
+    } catch (error) {
+      const msg = error.response?.data?.message || "Error al validar cupón";
+      set({
+        appliedCoupon:     null,
+        appliedCouponCode: null,
+        discountAmount:    0,
+        isApplyingCoupon:  false,
+        couponError:       msg,
+      });
+      return { success: false, message: msg };
+    }
+  },
+
+  removeCoupon: () => set({
+    appliedCoupon:     null,
+    appliedCouponCode: null,
+    discountAmount:    0,
+    couponError:       null,
+  }),
+
   // ── Items ─────────────────────────────────────────────────
   addItem: (dish, restaurantId, restaurantName) => {
     const state = get();
     const price = cleanPrice(dish.price);
 
-    // Si cambia de restaurante, limpia el carrito
+    // Si cambia de restaurante, limpia el carrito y el cupón
     if (state.restaurantId && state.restaurantId !== restaurantId) {
       const next = {
         ...state,
         items: [{ dishId: dish._id, name: dish.name, unitPrice: price, image: dish.image, quantity: 1, specialInstructions: "" }],
         restaurantId,
         restaurantName,
+        appliedCoupon:     null,
+        appliedCouponCode: null,
+        discountAmount:    0,
+        couponError:       null,
       };
       set(next);
       saveCart(next);
@@ -152,11 +211,21 @@ export const useCartStore = create((set, get) => ({
   },
 
   clearCart: () => {
-    set({ ...EMPTY_CART });
+    set({
+      ...EMPTY_CART,
+      appliedCoupon:     null,
+      appliedCouponCode: null,
+      discountAmount:    0,
+      couponError:       null,
+    });
     saveCart(EMPTY_CART);
   },
 
   // ── Getters ───────────────────────────────────────────────
   getTotalItems: () => get().items.reduce((acc, i) => acc + i.quantity, 0),
   getTotalPrice: () => get().items.reduce((acc, i) => acc + i.quantity * i.unitPrice, 0),
+  getFinalTotal: () => {
+    const subtotal = get().items.reduce((acc, i) => acc + i.unitPrice * i.quantity, 0);
+    return Math.max(0, subtotal - get().discountAmount);
+  },
 }));
