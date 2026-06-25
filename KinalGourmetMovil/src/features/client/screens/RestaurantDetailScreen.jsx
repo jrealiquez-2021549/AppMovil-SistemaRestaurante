@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, Image, TouchableOpacity,
-  TextInput, ActivityIndicator, Alert, FlatList,
-  KeyboardAvoidingView, Platform, SafeAreaView,
+  TextInput, ActivityIndicator, Alert,
+  KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useAuthStore } from '../../../shared/store/authStore';
@@ -10,6 +10,7 @@ import { useReviewStore } from '../../../shared/store/useReviewStore';
 import { useCartStore } from '../../../shared/store/useCartStore';
 import { getRestaurantByIdRequest } from '../../../shared/api/restaurants';
 import { getDishesRequest } from '../../../shared/api/dishes';
+import AppHeader from '../../../shared/components/AppHeader';
 
 /* ── TOKENS ─────────────────────────────────────────────────── */
 const ORANGE = '#E8650A';
@@ -71,7 +72,6 @@ const DishCard = ({ dish, restaurantId, restaurantName }) => {
 
   return (
     <View style={[ds.card, !isAvailable && { opacity: 0.5 }]}>
-      {/* Imagen */}
       <View style={ds.imgWrap}>
         {dish.image ? (
           <Image source={{ uri: dish.image }} style={ds.img} resizeMode="cover" />
@@ -92,7 +92,6 @@ const DishCard = ({ dish, restaurantId, restaurantName }) => {
         )}
       </View>
 
-      {/* Info */}
       <View style={ds.info}>
         <Text style={ds.dishName} numberOfLines={1}>{dish.name}</Text>
         {dish.description ? (
@@ -244,6 +243,63 @@ const rv = StyleSheet.create({
   deleteBtnText: { fontSize: 11, fontWeight: '700', color: '#EF4444' },
 });
 
+/* ── BOTTOM NAV ──────────────────────────────────────────────── */
+// Replica visualmente el tab bar de ClientTabs para pantallas fuera del Tab navigator
+const TABS = [
+  { name: 'Inicio',      icon: 'home',      screen: 'Inicio' },
+  { name: 'Mis Pedidos', icon: 'file-text', screen: 'Mis Pedidos' },
+  { name: 'Perfil',      icon: 'user',      screen: 'Perfil' },
+];
+
+const BottomNav = ({ navigation }) => (
+  <View style={nb.bar}>
+    {TABS.map(({ name, icon, screen }) => (
+      <TouchableOpacity
+        key={name}
+        style={nb.tab}
+        onPress={() => navigation.navigate('ClientTabs', { screen })}
+        activeOpacity={0.7}
+      >
+        <View style={nb.iconWrap}>
+          <Feather name={icon} size={16} color={MUTED} />
+        </View>
+        <Text style={nb.label}>{name}</Text>
+      </TouchableOpacity>
+    ))}
+  </View>
+);
+
+const nb = StyleSheet.create({
+  bar: {
+    flexDirection: 'row',
+    backgroundColor: WHITE,
+    borderTopColor: 'rgba(0,0,0,0.07)',
+    borderTopWidth: 1,
+    height: 70,
+    paddingBottom: 12,
+    paddingTop: 8,
+  },
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  iconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  label: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: MUTED,
+    letterSpacing: 0.3,
+  },
+});
+
 /* ── PANTALLA PRINCIPAL ──────────────────────────────────────── */
 export default function RestaurantDetailScreen({ route, navigation }) {
   const { id } = route.params;
@@ -271,12 +327,12 @@ export default function RestaurantDetailScreen({ route, navigation }) {
         setLoading(true);
         const [restRes, dishRes] = await Promise.all([
           getRestaurantByIdRequest(id),
-          getDishesRequest(),
+          getDishesRequest(id),
         ]);
         const restData  = restRes.data?.data ?? restRes.data?.restaurant ?? restRes.data;
         const allDishes = dishRes.data?.data ?? dishRes.data?.dishes ?? [];
         setRestaurant(restData);
-        setDishes(allDishes.filter((d) => d.restaurant === id || d.restaurant?._id === id));
+        setDishes(allDishes);
       } catch (err) {
         setError(err.response?.data?.message || 'Error al cargar el restaurante');
       } finally {
@@ -333,8 +389,8 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     ]);
   };
 
-  const totalItems   = getTotalItems();
-  const isCartHere   = cartRestId === id;
+  const totalItems = getTotalItems();
+  const isCartHere = cartRestId === id;
 
   /* ── LOADING / ERROR ── */
   if (loading) return (
@@ -357,212 +413,222 @@ export default function RestaurantDetailScreen({ route, navigation }) {
   /* ── RENDER ── */
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <SafeAreaView style={s.root}>
+      <View style={s.root}>
 
-        {/* HERO */}
-        <View style={s.hero}>
-          <Image
-            source={{ uri: restaurant.photo || 'https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg' }}
-            style={s.heroImg}
-            resizeMode="cover"
-          />
-          <View style={s.heroOverlay} />
+        {/* ── 1. HEADER GLOBAL ─────────────────────────────── */}
+        <AppHeader navigation={navigation} />
 
-          {/* Botón volver */}
-          <TouchableOpacity style={s.backCircle} onPress={() => navigation.goBack()}>
-            <Feather name="arrow-left" size={20} color={WHITE} />
-          </TouchableOpacity>
+        {/* ── 2. CONTENIDO SCROLLABLE ──────────────────────── */}
+        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
-          {/* Nombre */}
-          <View style={s.heroBottom}>
-            <View style={s.heroBadge}>
-              <Text style={s.heroBadgeText}>Abierto ahora</Text>
-            </View>
-            <Text style={s.heroName}>{restaurant.name}.</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Feather name="map-pin" size={12} color="rgba(255,255,255,0.7)" />
-              <Text style={s.heroAddr}>{restaurant.address}</Text>
+          {/* HERO */}
+          <View style={s.hero}>
+            <Image
+              source={{ uri: restaurant.photo || 'https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg' }}
+              style={s.heroImg}
+              resizeMode="cover"
+            />
+            <View style={s.heroOverlay} />
+
+            {/* Botón volver */}
+            <TouchableOpacity style={s.backCircle} onPress={() => navigation.goBack()}>
+              <Feather name="arrow-left" size={20} color={WHITE} />
+            </TouchableOpacity>
+
+            {/* Nombre */}
+            <View style={s.heroBottom}>
+              <View style={s.heroBadge}>
+                <Text style={s.heroBadgeText}>Abierto ahora</Text>
+              </View>
+              <Text style={s.heroName}>{restaurant.name}.</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Feather name="map-pin" size={12} color="rgba(255,255,255,0.7)" />
+                <Text style={s.heroAddr}>{restaurant.address}</Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* INFO CARDS */}
-        <View style={s.infoRow}>
-          {[
-            { icon: 'star',  label: 'Rating',   value: avgRating ?? (restaurant.averageRating?.toFixed(1) || 'Nuevo') },
-            { icon: 'dollar-sign', label: 'Precio',  value: restaurant.averagePrice != null ? `Q${Number(restaurant.averagePrice).toFixed(0)}` : 'N/D' },
-            { icon: 'clock', label: 'Horario',  value: restaurant.openingHours ? `${restaurant.openingHours}-${restaurant.closingHours}` : 'N/D' },
-            { icon: 'phone', label: 'Contacto', value: restaurant.phone || 'N/D' },
-          ].map(({ icon, label, value }) => (
-            <View key={label} style={s.infoCard}>
-              <Feather name={icon} size={14} color={ORANGE} />
-              <Text style={s.infoLabel}>{label}</Text>
-              <Text style={s.infoValue} numberOfLines={1}>{value}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* TABS */}
-        <View style={s.tabRow}>
-          {[
-            { key: 'menu',    label: 'Menú' },
-            { key: 'reviews', label: `Reseñas${reviews.length > 0 ? ` (${reviews.length})` : ''}` },
-          ].map(({ key, label }) => (
-            <TouchableOpacity
-              key={key}
-              style={[s.tab, activeTab === key && s.tabActive]}
-              onPress={() => setActiveTab(key)}
-              activeOpacity={0.8}
-            >
-              <Text style={[s.tabText, activeTab === key && s.tabTextActive]}>{label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* CONTENIDO */}
-        {activeTab === 'menu' ? (
-          <ScrollView style={s.scroll} contentContainerStyle={{ padding: 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
-            {/* Búsqueda */}
-            <View style={s.searchBar}>
-              <Feather name="search" size={14} color={MUTED} />
-              <TextInput
-                style={s.searchInput}
-                placeholder="Buscar platillo..."
-                placeholderTextColor={MUTED}
-                value={searchDish}
-                onChangeText={setSearchDish}
-              />
-            </View>
-
-            {/* Chips de tipo */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
-              <View style={{ flexDirection: 'row', gap: 6 }}>
-                {DISH_TYPES.map(({ value, label }) => (
-                  <TouchableOpacity
-                    key={value}
-                    style={[s.typeChip, activeType === value && s.typeChipActive]}
-                    onPress={() => setActiveType(value)}
-                    activeOpacity={0.75}
-                  >
-                    <Text style={[s.typeChipText, activeType === value && s.typeChipTextActive]}>
-                      {label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+          {/* INFO CARDS */}
+          <View style={s.infoRow}>
+            {[
+              { icon: 'star',        label: 'Rating',   value: avgRating ?? (restaurant.averageRating?.toFixed(1) || 'Nuevo') },
+              { icon: 'dollar-sign', label: 'Precio',   value: restaurant.averagePrice != null ? `Q${Number(restaurant.averagePrice).toFixed(0)}` : 'N/D' },
+              { icon: 'clock',       label: 'Horario',  value: restaurant.openingHours ? `${restaurant.openingHours}-${restaurant.closingHours}` : 'N/D' },
+              { icon: 'phone',       label: 'Contacto', value: restaurant.phone || 'N/D' },
+            ].map(({ icon, label, value }) => (
+              <View key={label} style={s.infoCard}>
+                <Feather name={icon} size={14} color={ORANGE} />
+                <Text style={s.infoLabel}>{label}</Text>
+                <Text style={s.infoValue} numberOfLines={1}>{value}</Text>
               </View>
-            </ScrollView>
+            ))}
+          </View>
 
-            {/* Platillos */}
-            {filteredDishes.length > 0 ? (
-              filteredDishes.map((dish) => (
-                <DishCard
-                  key={dish._id}
-                  dish={dish}
-                  restaurantId={id}
-                  restaurantName={restaurant.name}
-                />
-              ))
-            ) : (
-              <View style={s.emptyDishes}>
-                <Feather name="coffee" size={36} color={MUTED} style={{ marginBottom: 10 }} />
-                <Text style={s.emptyText}>Sin platillos en esta categoría</Text>
-              </View>
-            )}
-          </ScrollView>
+          {/* TABS MENÚ / RESEÑAS */}
+          <View style={s.tabRow}>
+            {[
+              { key: 'menu',    label: 'Menú' },
+              { key: 'reviews', label: `Reseñas${reviews.length > 0 ? ` (${reviews.length})` : ''}` },
+            ].map(({ key, label }) => (
+              <TouchableOpacity
+                key={key}
+                style={[s.tab, activeTab === key && s.tabActive]}
+                onPress={() => setActiveTab(key)}
+                activeOpacity={0.8}
+              >
+                <Text style={[s.tabText, activeTab === key && s.tabTextActive]}>{label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-        ) : (
-          <ScrollView style={s.scroll} contentContainerStyle={{ padding: 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          {/* ── TAB: MENÚ ── */}
+          {activeTab === 'menu' ? (
+            <View style={{ padding: 16, paddingBottom: 100 }}>
 
-            {/* Resumen rating */}
-            {reviews.length > 0 && avgRating && (
-              <View style={s.ratingBox}>
-                <Text style={s.ratingNum}>{avgRating}</Text>
-                <StarRating value={Math.round(parseFloat(avgRating))} size={18} />
-                <Text style={s.ratingCount}>{reviews.length} experiencias</Text>
-              </View>
-            )}
-
-            {/* Formulario */}
-            {user ? (
-              <View style={s.reviewForm}>
-                <Text style={s.formTitle}>{editingReview ? 'Editar reseña' : 'Tu experiencia'}</Text>
-
-                {reviewMsg && (
-                  <View style={[s.msgBox, reviewMsg.type === 'success' ? s.msgSuccess : s.msgError]}>
-                    <Text style={[s.msgText, reviewMsg.type === 'success' ? s.msgTextSuccess : s.msgTextError]}>
-                      {reviewMsg.text}
-                    </Text>
-                  </View>
-                )}
-
-                <View style={s.starsWrap}>
-                  <Text style={s.formLabel}>Calificación</Text>
-                  <StarRating value={reviewRating} onChange={setReviewRating} size={28} />
-                </View>
-
-                <Text style={[s.formLabel, { marginBottom: 6 }]}>Comentario</Text>
+              {/* Búsqueda */}
+              <View style={s.searchBar}>
+                <Feather name="search" size={14} color={MUTED} />
                 <TextInput
-                  style={s.textarea}
-                  placeholder="¿Qué tal estuvo la comida?"
+                  style={s.searchInput}
+                  placeholder="Buscar platillo..."
                   placeholderTextColor={MUTED}
-                  value={reviewComment}
-                  onChangeText={setReviewComment}
-                  multiline
-                  numberOfLines={4}
-                  textAlignVertical="top"
+                  value={searchDish}
+                  onChangeText={setSearchDish}
                 />
+              </View>
 
-                <TouchableOpacity
-                  style={s.submitBtn}
-                  onPress={handleSubmitReview}
-                  disabled={submitting}
-                  activeOpacity={0.85}
-                >
-                  <Text style={s.submitBtnText}>
-                    {submitting ? 'Enviando...' : editingReview ? 'Guardar cambios' : 'Publicar reseña'}
-                  </Text>
-                </TouchableOpacity>
+              {/* Chips de tipo */}
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
+                <View style={{ flexDirection: 'row', gap: 6 }}>
+                  {DISH_TYPES.map(({ value, label }) => (
+                    <TouchableOpacity
+                      key={value}
+                      style={[s.typeChip, activeType === value && s.typeChipActive]}
+                      onPress={() => setActiveType(value)}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={[s.typeChipText, activeType === value && s.typeChipTextActive]}>
+                        {label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
 
-                {editingReview && (
-                  <TouchableOpacity style={s.cancelBtn} onPress={resetForm}>
-                    <Text style={s.cancelBtnText}>Cancelar</Text>
+              {/* Platillos */}
+              {filteredDishes.length > 0 ? (
+                filteredDishes.map((dish) => (
+                  <DishCard
+                    key={dish._id}
+                    dish={dish}
+                    restaurantId={id}
+                    restaurantName={restaurant.name}
+                  />
+                ))
+              ) : (
+                <View style={s.emptyDishes}>
+                  <Feather name="coffee" size={36} color={MUTED} style={{ marginBottom: 10 }} />
+                  <Text style={s.emptyText}>Sin platillos en esta categoría</Text>
+                </View>
+              )}
+            </View>
+
+          ) : (
+            /* ── TAB: RESEÑAS ── */
+            <View style={{ padding: 16, paddingBottom: 100 }}>
+
+              {/* Resumen rating */}
+              {reviews.length > 0 && avgRating && (
+                <View style={s.ratingBox}>
+                  <Text style={s.ratingNum}>{avgRating}</Text>
+                  <StarRating value={Math.round(parseFloat(avgRating))} size={18} />
+                  <Text style={s.ratingCount}>{reviews.length} experiencias</Text>
+                </View>
+              )}
+
+              {/* Formulario */}
+              {user ? (
+                <View style={s.reviewForm}>
+                  <Text style={s.formTitle}>{editingReview ? 'Editar reseña' : 'Tu experiencia'}</Text>
+
+                  {reviewMsg && (
+                    <View style={[s.msgBox, reviewMsg.type === 'success' ? s.msgSuccess : s.msgError]}>
+                      <Text style={[s.msgText, reviewMsg.type === 'success' ? s.msgTextSuccess : s.msgTextError]}>
+                        {reviewMsg.text}
+                      </Text>
+                    </View>
+                  )}
+
+                  <View style={s.starsWrap}>
+                    <Text style={s.formLabel}>Calificación</Text>
+                    <StarRating value={reviewRating} onChange={setReviewRating} size={28} />
+                  </View>
+
+                  <Text style={[s.formLabel, { marginBottom: 6 }]}>Comentario</Text>
+                  <TextInput
+                    style={s.textarea}
+                    placeholder="¿Qué tal estuvo la comida?"
+                    placeholderTextColor={MUTED}
+                    value={reviewComment}
+                    onChangeText={setReviewComment}
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                  />
+
+                  <TouchableOpacity
+                    style={s.submitBtn}
+                    onPress={handleSubmitReview}
+                    disabled={submitting}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={s.submitBtnText}>
+                      {submitting ? 'Enviando...' : editingReview ? 'Guardar cambios' : 'Publicar reseña'}
+                    </Text>
                   </TouchableOpacity>
-                )}
-              </View>
-            ) : (
-              <View style={s.loginPrompt}>
-                <Feather name="lock" size={28} color={MUTED} style={{ marginBottom: 8 }} />
-                <Text style={s.loginPromptTitle}>¿Te gustó el lugar?</Text>
-                <Text style={s.loginPromptSub}>Inicia sesión para dejar una reseña</Text>
-                <TouchableOpacity style={s.loginPromptBtn} onPress={() => navigation.navigate('Login')}>
-                  <Text style={s.loginPromptBtnText}>Identificarse</Text>
-                </TouchableOpacity>
-              </View>
-            )}
 
-            {/* Lista de reseñas */}
-            <Text style={s.reviewsTitle}>Comentarios recientes</Text>
-            {loadingReviews ? (
-              <ActivityIndicator color={ORANGE} style={{ marginTop: 20 }} />
-            ) : reviews.length === 0 ? (
-              <View style={s.emptyDishes}>
-                <Text style={s.emptyText}>Sin reseñas aún — ¡sé el primero!</Text>
-              </View>
-            ) : (
-              reviews.map((r) => (
-                <ReviewCard
-                  key={r._id}
-                  review={r}
-                  currentUserId={user?.id || user?._id}
-                  onEdit={handleEditReview}
-                  onDelete={handleDeleteReview}
-                />
-              ))
-            )}
-          </ScrollView>
-        )}
+                  {editingReview && (
+                    <TouchableOpacity style={s.cancelBtn} onPress={resetForm}>
+                      <Text style={s.cancelBtnText}>Cancelar</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ) : (
+                <View style={s.loginPrompt}>
+                  <Feather name="lock" size={28} color={MUTED} style={{ marginBottom: 8 }} />
+                  <Text style={s.loginPromptTitle}>¿Te gustó el lugar?</Text>
+                  <Text style={s.loginPromptSub}>Inicia sesión para dejar una reseña</Text>
+                  <TouchableOpacity style={s.loginPromptBtn} onPress={() => navigation.navigate('Login')}>
+                    <Text style={s.loginPromptBtnText}>Identificarse</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
 
-        {/* BOTÓN FLOTANTE CARRITO */}
+              {/* Lista de reseñas */}
+              <Text style={s.reviewsTitle}>Comentarios recientes</Text>
+              {loadingReviews ? (
+                <ActivityIndicator color={ORANGE} style={{ marginTop: 20 }} />
+              ) : reviews.length === 0 ? (
+                <View style={s.emptyDishes}>
+                  <Text style={s.emptyText}>Sin reseñas aún — ¡sé el primero!</Text>
+                </View>
+              ) : (
+                reviews.map((r) => (
+                  <ReviewCard
+                    key={r._id}
+                    review={r}
+                    currentUserId={user?.id || user?._id}
+                    onEdit={handleEditReview}
+                    onDelete={handleDeleteReview}
+                  />
+                ))
+              )}
+            </View>
+          )}
+
+        </ScrollView>
+
+        {/* ── 3. BOTÓN FLOTANTE CARRITO ────────────────────── */}
         {isCartHere && totalItems > 0 && (
           <TouchableOpacity style={s.cartFab} onPress={openCart} activeOpacity={0.9}>
             <Text style={s.cartFabText}>Ver mi orden</Text>
@@ -572,7 +638,10 @@ export default function RestaurantDetailScreen({ route, navigation }) {
           </TouchableOpacity>
         )}
 
-      </SafeAreaView>
+        {/* ── 4. NAVBAR INFERIOR ───────────────────────────── */}
+        <BottomNav navigation={navigation} />
+
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -607,30 +676,21 @@ const s = StyleSheet.create({
   heroAddr:    { fontSize: 11, color: 'rgba(255,255,255,0.7)' },
 
   /* Info cards */
-  infoRow:     { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
-  infoCard:    {
+  infoRow:  { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
+  infoCard: {
     flex: 1, backgroundColor: WHITE, borderRadius: 12,
     padding: 10, alignItems: 'center', gap: 3,
     borderWidth: 1, borderColor: 'rgba(0,0,0,0.07)',
   },
-  infoLabel:   { fontSize: 8, fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: 0.5 },
-  infoValue:   { fontSize: 11, fontWeight: '800', color: DARK, textAlign: 'center' },
+  infoLabel: { fontSize: 8, fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: 0.5 },
+  infoValue: { fontSize: 11, fontWeight: '800', color: DARK, textAlign: 'center' },
 
-  /* Tabs */
-  tabRow:     {
-    flexDirection: 'row', paddingHorizontal: 16,
-    gap: 8, marginBottom: 4,
-  },
-  tab:         {
-    paddingHorizontal: 18, paddingVertical: 8,
-    borderRadius: 20, backgroundColor: CREAM,
-  },
-  tabActive:   { backgroundColor: DARK },
-  tabText:     { fontSize: 12, fontWeight: '700', color: MUTED },
+  /* Tabs menú/reseñas */
+  tabRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 4 },
+  tab:        { paddingHorizontal: 18, paddingVertical: 8, borderRadius: 20, backgroundColor: CREAM },
+  tabActive:  { backgroundColor: DARK },
+  tabText:    { fontSize: 12, fontWeight: '700', color: MUTED },
   tabTextActive: { color: WHITE },
-
-  /* Scroll */
-  scroll: { flex: 1 },
 
   /* Search */
   searchBar: {
@@ -642,13 +702,9 @@ const s = StyleSheet.create({
   searchInput: { flex: 1, fontSize: 13, color: DARK, padding: 0 },
 
   /* Type chips */
-  typeChip:     {
-    backgroundColor: WHITE, borderRadius: 20,
-    paddingHorizontal: 14, paddingVertical: 6,
-    borderWidth: 1, borderColor: 'rgba(0,0,0,0.08)',
-  },
-  typeChipActive: { backgroundColor: DARK, borderColor: DARK },
-  typeChipText:   { fontSize: 11, fontWeight: '700', color: MUTED },
+  typeChip:         { backgroundColor: WHITE, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6, borderWidth: 1, borderColor: 'rgba(0,0,0,0.08)' },
+  typeChipActive:   { backgroundColor: DARK, borderColor: DARK },
+  typeChipText:     { fontSize: 11, fontWeight: '700', color: MUTED },
   typeChipTextActive: { color: WHITE },
 
   /* Empty */
@@ -661,18 +717,12 @@ const s = StyleSheet.create({
   emptyText: { fontSize: 13, color: MUTED, fontWeight: '600' },
 
   /* Rating box */
-  ratingBox: {
-    backgroundColor: DARK, borderRadius: 20, padding: 20,
-    alignItems: 'center', gap: 8, marginBottom: 16,
-  },
+  ratingBox:   { backgroundColor: DARK, borderRadius: 20, padding: 20, alignItems: 'center', gap: 8, marginBottom: 16 },
   ratingNum:   { fontSize: 48, fontWeight: '900', color: WHITE, lineHeight: 52 },
   ratingCount: { fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: '600' },
 
   /* Review form */
-  reviewForm: {
-    backgroundColor: WHITE, borderRadius: 20, padding: 16,
-    marginBottom: 20, borderWidth: 1, borderColor: 'rgba(0,0,0,0.07)',
-  },
+  reviewForm:  { backgroundColor: WHITE, borderRadius: 20, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(0,0,0,0.07)' },
   formTitle:   { fontSize: 18, fontWeight: '900', color: DARK, marginBottom: 12, letterSpacing: -0.3 },
   formLabel:   { fontSize: 10, fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 },
   starsWrap:   { marginBottom: 16 },
@@ -681,47 +731,32 @@ const s = StyleSheet.create({
     padding: 12, fontSize: 13, color: DARK,
     minHeight: 90, marginBottom: 14,
   },
-  submitBtn: {
-    backgroundColor: DARK, borderRadius: 12,
-    paddingVertical: 14, alignItems: 'center', marginBottom: 8,
-  },
+  submitBtn:     { backgroundColor: DARK, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 8 },
   submitBtnText: { color: WHITE, fontWeight: '800', fontSize: 13, letterSpacing: 0.3 },
-  cancelBtn: {
-    backgroundColor: CREAM, borderRadius: 12,
-    paddingVertical: 12, alignItems: 'center',
-  },
+  cancelBtn:     { backgroundColor: CREAM, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
   cancelBtnText: { color: MUTED, fontWeight: '700', fontSize: 13 },
 
-  /* Feedback message */
-  msgBox:        { borderRadius: 10, padding: 10, marginBottom: 12 },
-  msgSuccess:    { backgroundColor: '#F0FDF4' },
-  msgError:      { backgroundColor: '#FEF2F2' },
-  msgText:       { fontSize: 12, fontWeight: '700' },
-  msgTextSuccess:{ color: '#16A34A' },
-  msgTextError:  { color: '#DC2626' },
+  /* Feedback */
+  msgBox:         { borderRadius: 10, padding: 10, marginBottom: 12 },
+  msgSuccess:     { backgroundColor: '#F0FDF4' },
+  msgError:       { backgroundColor: '#FEF2F2' },
+  msgText:        { fontSize: 12, fontWeight: '700' },
+  msgTextSuccess: { color: '#16A34A' },
+  msgTextError:   { color: '#DC2626' },
 
   /* Login prompt */
-  loginPrompt: {
-    backgroundColor: WHITE, borderRadius: 20, padding: 24,
-    alignItems: 'center', marginBottom: 20,
-    borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(0,0,0,0.1)',
-  },
+  loginPrompt:      { backgroundColor: WHITE, borderRadius: 20, padding: 24, alignItems: 'center', marginBottom: 20, borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(0,0,0,0.1)' },
   loginPromptTitle: { fontSize: 15, fontWeight: '800', color: DARK, marginBottom: 4 },
   loginPromptSub:   { fontSize: 12, color: MUTED, marginBottom: 16 },
   loginPromptBtn:   { backgroundColor: DARK, borderRadius: 20, paddingHorizontal: 24, paddingVertical: 10 },
   loginPromptBtnText: { color: WHITE, fontWeight: '700', fontSize: 13 },
 
   /* Reviews title */
-  reviewsTitle: {
-    fontSize: 11, fontWeight: '700', color: MUTED,
-    textTransform: 'uppercase', letterSpacing: 1,
-    marginBottom: 12,
-  },
+  reviewsTitle: { fontSize: 11, fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 },
 
   /* Cart FAB */
   cartFab: {
-    position: 'absolute', bottom: 20, alignSelf: 'center',
-    left: 40, right: 40,
+    position: 'absolute', bottom: 80, left: 40, right: 40,
     backgroundColor: DARK, borderRadius: 30,
     flexDirection: 'row', alignItems: 'center',
     paddingLeft: 24, paddingRight: 6, paddingVertical: 6,
@@ -729,9 +764,6 @@ const s = StyleSheet.create({
     shadowColor: DARK, shadowOpacity: 0.3, shadowOffset: { width: 0, height: 8 }, shadowRadius: 16, elevation: 8,
   },
   cartFabText:  { color: WHITE, fontWeight: '800', fontSize: 13, letterSpacing: 0.3 },
-  cartBadge:    {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: ORANGE, alignItems: 'center', justifyContent: 'center',
-  },
+  cartBadge:    { width: 40, height: 40, borderRadius: 20, backgroundColor: ORANGE, alignItems: 'center', justifyContent: 'center' },
   cartBadgeText: { color: WHITE, fontWeight: '900', fontSize: 15 },
 });

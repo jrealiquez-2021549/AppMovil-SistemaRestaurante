@@ -1,7 +1,9 @@
 import restauranteClient from "./restauranteClient";
 
-export const getReviewsByRestaurantRequest = (restaurantId, page = 1) =>
-  restauranteClient.get(`/reviews/restaurant/${restaurantId}?page=${page}`);
+export const getReviewsByRestaurantRequest = (restaurantId, page = 1, limit = 10) =>
+  restauranteClient.get(`/reviews/`, {
+    params: { restaurant: restaurantId, page, limit },
+  });
 
 export const createReviewRequest = (data) =>
   restauranteClient.post("/reviews/create", data);

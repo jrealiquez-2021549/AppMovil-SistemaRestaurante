@@ -234,8 +234,8 @@ const HomeScreen = ({ navigation }) => {
                     key={r._id || r.id}
                     restaurant={r}
                     onPress={() =>
-                      navigation.navigate('RestauranteDetalle', {
-                        restaurantId: r._id || r.id,
+                      navigation.navigate('RestaurantDetail', {
+                        id: r._id || r.id,
                       })
                     }
                   />
