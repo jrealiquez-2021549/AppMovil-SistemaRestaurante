@@ -1,7 +1,8 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import HomeScreen from '../../features/client/screens/HomeScreen';
+import HomeScreen     from '../../features/client/screens/HomeScreen';
+import MyOrdersScreen from '../../features/client/screens/MyOrdersScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -66,7 +67,7 @@ const ClientTabs = () => (
     />
     <Tab.Screen
       name="Mis Pedidos"
-      component={PlaceholderScreen}
+      component={MyOrdersScreen}
       options={{ tabBarIcon: ({ focused }) => <TabIcon name="file-text" focused={focused} /> }}
     />
     <Tab.Screen

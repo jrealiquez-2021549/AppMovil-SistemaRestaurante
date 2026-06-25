@@ -12,6 +12,7 @@
  *   <CartDrawer />
  */
 import React, { useEffect, useRef, useState } from 'react';
+import InvoiceModal from './InvoiceModal';
 import {
   View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView,
   Image, Animated, Dimensions, Platform, TextInput, ActivityIndicator,
@@ -226,6 +227,7 @@ export default function CartDrawer() {
     discountAmount,
   } = useCartStore();
 
+  const [invoiceVisible, setInvoiceVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(DRAWER_H)).current;
 
   useEffect(() => {
@@ -242,6 +244,7 @@ export default function CartDrawer() {
   const totalQty   = getTotalItems();
 
   return (
+    <>
     <Modal
       visible={isCartOpen}
       transparent
@@ -363,7 +366,11 @@ export default function CartDrawer() {
               </View>
 
               {/* Botón confirmar */}
-              <TouchableOpacity style={s.confirmBtn} activeOpacity={0.85}>
+              <TouchableOpacity
+                style={s.confirmBtn}
+                activeOpacity={0.85}
+                onPress={() => { closeCart(); setInvoiceVisible(true); }}
+              >
                 <Text style={s.confirmBtnText}>Confirmar Orden →</Text>
               </TouchableOpacity>
 
@@ -377,6 +384,14 @@ export default function CartDrawer() {
         )}
       </Animated.View>
     </Modal>
+
+    {/* Modal de facturación */}
+    <InvoiceModal
+      visible={invoiceVisible}
+      onClose={() => setInvoiceVisible(false)}
+      onConfirm={() => setInvoiceVisible(false)}
+    />
+  </>
   );
 }
 
