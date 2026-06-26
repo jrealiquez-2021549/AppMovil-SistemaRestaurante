@@ -1,8 +1,10 @@
+import { Dimensions, StyleSheet } from 'react-native';
+import { SPACING, BORDER_RADIUS } from './theme';
 
 export const { width, height } = Dimensions.get('window');
 
-export const isSmall  = height < 668;   // SE 1ra gen, Moto G4, etc.
-export const isMedium = height < 812;   // iPhone 8, Pixel 3a
+export const isSmall  = height < 668;   
+export const isMedium = height < 812;  
 
 export const GK = {
   bg:          '#1C0A00',

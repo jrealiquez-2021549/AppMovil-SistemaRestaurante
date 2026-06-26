@@ -8,14 +8,14 @@ import {
   Platform,
   TouchableOpacity,
   StatusBar,
-  Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../../shared/store/authStore';
 import { SPACING, BORDER_RADIUS } from '../../../shared/constants/theme';
 import Input from '../../../shared/components/Input';
 import Button from '../../../shared/components/Button';
-import { GK, fs, sp, s } from '../../../shared/constants/login';
+import { width, heightGK, isSmall,isMedium, GK, fs, sp,s }  from '../../../shared/constants/register';
+
 
 const RegisterScreen = () => {
   const navigation = useNavigation();

@@ -22,27 +22,25 @@ export const GK = {
 };
 
 export const fs = {
-  brandName:    isSmall ? 15 : isMedium ? 18 : 20,
-  tagline:      isSmall ? 11 : 12,
-  cardTitle:    isSmall ? 20 : isMedium ? 23 : 26,
-  cardSub:      isSmall ? 12 : 14,
   back:         isSmall ? 13 : 14,
+  title:        isSmall ? 24 : isMedium ? 27 : 30,
+  subtitle:     isSmall ? 13 : 14,
   btn:          isSmall ? 12 : 14,
-  verify:       isSmall ? 11 : 12,
   footer:       isSmall ? 13 : 14,
+  errorText:    isSmall ? 11 : 13,
   successEmoji: isSmall ? 40 : 52,
-  successTitle: isSmall ? 22 : 26,
+  successTitle: isSmall ? 20 : 24,
   successBody:  isSmall ? 13 : 14,
 };
 
 export const sp = {
   paddingTop:   isSmall ? 28 : isMedium ? 38 : 48,
-  logoSize:     isSmall ? 56 : isMedium ? 64 : 70,
-  logoEmoji:    isSmall ? 22 : isMedium ? 26 : 30,
-  logoMargin:   isSmall ? 8 : 12,
-  headerBottom: isSmall ? 16 : isMedium ? 22 : 28,
+  backBottom:   isSmall ? SPACING.lg : SPACING.xl,
+  iconSize:     isSmall ? 64 : isMedium ? 72 : 80,
+  iconEmoji:    isSmall ? 26 : isMedium ? 30 : 34,
+  iconBottom:   isSmall ? SPACING.md : SPACING.lg,
+  titleBottom:  isSmall ? SPACING.lg : SPACING.xl,
   cardPadding:  isSmall ? 14 : SPACING.lg,
-  backBottom:   isSmall ? 16 : 24,
 };
 
 export const s = StyleSheet.create({
@@ -57,24 +55,15 @@ export const s = StyleSheet.create({
     paddingBottom: SPACING.xl,
   },
 
-  // Blobs
+  // Blob
   blob1: {
     position: 'absolute',
-    width: width * 0.65,
-    height: width * 0.65,
-    borderRadius: width * 0.325,
-    backgroundColor: 'rgba(234,88,12,0.1)',
+    width: width * 0.7,
+    height: width * 0.7,
+    borderRadius: width * 0.35,
+    backgroundColor: 'rgba(234,88,12,0.08)',
     top: -width * 0.15,
-    left: -width * 0.15,
-  },
-  blob2: {
-    position: 'absolute',
-    width: width * 0.45,
-    height: width * 0.45,
-    borderRadius: width * 0.225,
-    backgroundColor: 'rgba(234,88,12,0.06)',
-    bottom: 60,
-    right: -width * 0.1,
+    right: -width * 0.2,
   },
 
   // Volver
@@ -89,36 +78,41 @@ export const s = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Header
-  header: {
-    alignItems: 'center',
-    marginBottom: sp.headerBottom,
-  },
-  logoRing: {
-    width: sp.logoSize,
-    height: sp.logoSize,
-    borderRadius: sp.logoSize / 2,
+  // Ícono
+  iconBox: {
+    width: sp.iconSize,
+    height: sp.iconSize,
+    borderRadius: sp.iconSize / 2,
     borderWidth: 2,
-    borderColor: 'rgba(234,88,12,0.4)',
+    borderColor: 'rgba(234,88,12,0.35)',
     backgroundColor: GK.bgLight,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: sp.logoMargin,
+    alignSelf: 'center',
+    marginBottom: sp.iconBottom,
   },
-  logoEmoji: { fontSize: sp.logoEmoji },
-  brandName: {
-    fontSize: fs.brandName,
+  iconEmoji: { fontSize: sp.iconEmoji },
+
+  // Título
+  titleBlock: {
+    alignItems: 'center',
+    marginBottom: sp.titleBottom,
+    paddingHorizontal: 8,
+  },
+  title: {
+    fontSize: fs.title,
     fontWeight: '800',
     color: GK.white,
-    letterSpacing: 4,
-    marginBottom: 4,
-  },
-  brandTagline: {
-    fontSize: fs.tagline,
-    color: GK.gray,
-    fontStyle: 'italic',
     textAlign: 'center',
-    paddingHorizontal: 8,
+    lineHeight: isSmall ? 30 : 36,
+    marginBottom: SPACING.sm,
+  },
+  subtitle: {
+    fontSize: fs.subtitle,
+    color: GK.gray,
+    textAlign: 'center',
+    lineHeight: 22,
+    maxWidth: 300,
   },
 
   // Tarjeta
@@ -130,66 +124,33 @@ export const s = StyleSheet.create({
     borderColor: GK.grayLight,
     marginBottom: SPACING.lg,
   },
-  cardTitle: {
-    fontSize: fs.cardTitle,
-    fontWeight: '800',
-    color: GK.white,
-    marginBottom: 4,
-  },
-  cardSub: {
-    fontSize: fs.cardSub,
-    color: GK.gray,
-    marginBottom: isSmall ? 10 : SPACING.md,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: GK.grayLight,
-    marginBottom: isSmall ? 10 : SPACING.lg,
-  },
 
   // Error
   errorBox: {
     flexDirection: 'row',
-    gap: 10,
+    alignItems: 'center',
+    gap: 8,
     backgroundColor: GK.errorBg,
     borderWidth: 1,
     borderColor: 'rgba(220,38,38,0.3)',
     borderRadius: BORDER_RADIUS.lg,
     padding: isSmall ? 10 : SPACING.md,
     marginBottom: SPACING.md,
-    alignItems: 'flex-start',
   },
-  errorIcon:  { fontSize: isSmall ? 14 : 18, marginTop: 1 },
-  errorTitle: { fontSize: isSmall ? 11 : 13, fontWeight: '700', color: GK.error, marginBottom: 2 },
-  errorBody:  { fontSize: isSmall ? 10 : 12, color: GK.gray, lineHeight: 18 },
+  errorIcon: { fontSize: isSmall ? 14 : 16 },
+  errorText: { flex: 1, fontSize: fs.errorText, color: GK.error, lineHeight: 18 },
 
-  // Botón primario
-  btnPrimary: {
+  // Botón
+  btn: {
     backgroundColor: GK.white,
     borderRadius: BORDER_RADIUS.xxl,
-    marginBottom: isSmall ? 10 : SPACING.md,
     minHeight: 48,
   },
-  btnPrimaryText: {
+  btnText: {
     color: GK.bg,
     fontSize: fs.btn,
     fontWeight: '800',
-    letterSpacing: 2,
-  },
-
-  // Nota verificación
-  verifyNote: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: BORDER_RADIUS.lg,
-    padding: isSmall ? 8 : SPACING.sm,
-    borderWidth: 1,
-    borderColor: GK.grayLight,
-  },
-  verifyNoteText: {
-    fontSize: fs.verify,
-    color: GK.gray,
-    lineHeight: 18,
-    textAlign: 'center',
+    letterSpacing: 1,
   },
 
   // Footer
@@ -197,7 +158,6 @@ export const s = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: SPACING.sm,
   },
   footerText: { fontSize: fs.footer, color: GK.gray },
   footerLink: { fontSize: fs.footer, color: GK.orangeLight, fontWeight: '700' },
