@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import HomeScreen     from '../../features/client/screens/HomeScreen';
 import MyOrdersScreen from '../../features/client/screens/MyOrdersScreen';
+import ProfileScreen  from '../../features/client/screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,15 +29,6 @@ const ti = StyleSheet.create({
     backgroundColor: ORANGE,
   },
 });
-
-const PlaceholderScreen = ({ route }) => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F3EF' }}>
-    <Feather name="tool" size={40} color={MUTED} style={{ marginBottom: 12 }} />
-    <Text style={{ fontSize: 16, fontWeight: '700', color: DARK }}>
-      {route.name} — Próximamente
-    </Text>
-  </View>
-);
 
 const ClientTabs = () => (
   <Tab.Navigator
@@ -72,7 +64,7 @@ const ClientTabs = () => (
     />
     <Tab.Screen
       name="Perfil"
-      component={PlaceholderScreen}
+      component={ProfileScreen}
       options={{ tabBarIcon: ({ focused }) => <TabIcon name="user" focused={focused} /> }}
     />
   </Tab.Navigator>
