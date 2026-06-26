@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -45,7 +45,7 @@ function RestaurantCard({ restaurant, onPress }) {
   const { name, category, address, photo, averagePrice, averageRating } = restaurant || {};
   const catKey   = category?.toUpperCase();
   const catIcon  = CATEGORY_ICON[catKey] ?? '🍽';
-  const catLabel = category?.replace('_', ' ') ?? 'Restaurante';
+  const catLabel = category?.replace(/_/g, ' ') ?? 'Restaurante';
   const isNew    = !averageRating || averageRating === 0;
 
   return (
@@ -95,13 +95,26 @@ function FilterChip({ label, active, onPress }) {
   );
 }
 
+// ── Helper label de categoría ──────────────────────────────────
+const getCategoryLabel = (cat) => {
+  if (cat === 'Todas') return '🍽 Todas';
+  return cat?.replace(/_/g, ' ') ?? cat;
+};
+
 // ── Pantalla principal ─────────────────────────────────────────
 const HomeScreen = ({ navigation }) => {
   const { user, getProfile } = useAuthStore();
   const {
-    loading, searchTerm, filterCategory, filterFeature,
-    fetchRestaurants, getFiltered, getCategories, getCategoryLabel,
-    setSearchTerm, setFilterCategory, setFilterFeature, clearFilters,
+    restaurants,
+    loading,
+    searchTerm,
+    filterCategory,
+    filterFeature,
+    fetchRestaurants,
+    setSearchTerm,
+    setFilterCategory,
+    setFilterFeature,
+    clearFilters,
   } = useRestaurantStore();
 
   useEffect(() => {
@@ -109,19 +122,34 @@ const HomeScreen = ({ navigation }) => {
     fetchRestaurants();
   }, []);
 
-  const filtered   = getFiltered();
-  const categories = getCategories();
+  // ── Filtrado reactivo ──────────────────────────────────────
+  // Al subscribirnos a los valores primitivos del store (restaurants,
+  // searchTerm, filterCategory, filterFeature), el componente re-renderiza
+  // automáticamente cuando cualquiera de ellos cambia.
+  const filtered = (Array.isArray(restaurants) ? restaurants : []).filter((r) => {
+    const matchSearch =
+      r.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.address?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchCategory = filterCategory === 'Todas' || r.category === filterCategory;
+    const matchFeature  = !filterFeature || r.features?.[filterFeature] === true;
+    return matchSearch && matchCategory && matchFeature;
+  });
+
+  const categories = [
+    'Todas',
+    ...new Set(
+      (Array.isArray(restaurants) ? restaurants : [])
+        .map((r) => r.category)
+        .filter(Boolean)
+    ),
+  ];
+
   const hasFilters = searchTerm || filterCategory !== 'Todas' || filterFeature;
 
   return (
     <View style={s.root}>
 
       {/* ── HEADER GLOBAL ────────────────────────────────────── */}
-      {/*
-        AppHeader vive fuera del ScrollView para quedarse fijo
-        en la parte superior mientras el contenido scrollea.
-        El hero oscuro empieza justo debajo.
-      */}
       <AppHeader navigation={navigation} />
 
       <ScrollView
@@ -251,14 +279,14 @@ const HomeScreen = ({ navigation }) => {
 
 // ── StyleSheet ─────────────────────────────────────────────────
 const s = StyleSheet.create({
-  root:   { flex: 1, backgroundColor: DARK },   // DARK para que header + hero sean un bloque continuo
+  root:   { flex: 1, backgroundColor: DARK },
   scroll: { paddingBottom: 32 },
 
-  /* Hero — continúa visualmente el fondo del AppHeader */
+  /* Hero */
   hero: {
     backgroundColor: DARK,
     paddingHorizontal: 20,
-    paddingTop: 6,          // el header ya tiene su paddingBottom
+    paddingTop: 6,
     paddingBottom: 28,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
@@ -282,7 +310,7 @@ const s = StyleSheet.create({
 
   /* Body */
   body: {
-    backgroundColor: CREAM,   // el scroll vuelve al crema desde aquí
+    backgroundColor: CREAM,
     padding: 20,
   },
 
