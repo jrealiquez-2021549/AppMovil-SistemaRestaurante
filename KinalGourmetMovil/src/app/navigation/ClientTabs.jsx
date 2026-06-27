@@ -1,14 +1,14 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import HomeScreen     from '../../features/client/screens/HomeScreen';
-import MyOrdersScreen from '../../features/client/screens/MyOrdersScreen';
-import ProfileScreen  from '../../features/client/screens/ProfileScreen';
+import HomeScreen            from '../../features/client/screens/HomeScreen';
+import MyOrdersScreen        from '../../features/client/screens/MyOrdersScreen';
+import MyReservationsScreen  from '../../features/client/screens/MyReservationsScreen';
+import ProfileScreen         from '../../features/client/screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
 const ORANGE = '#E8650A';
-const DARK   = '#1A1A1A';
 const MUTED  = '#8A8680';
 
 const TabIcon = ({ name, focused }) => (
@@ -61,6 +61,11 @@ const ClientTabs = () => (
       name="Mis Pedidos"
       component={MyOrdersScreen}
       options={{ tabBarIcon: ({ focused }) => <TabIcon name="file-text" focused={focused} /> }}
+    />
+    <Tab.Screen
+      name="Mis Reservaciones"
+      component={MyReservationsScreen}
+      options={{ tabBarIcon: ({ focused }) => <TabIcon name="calendar" focused={focused} /> }}
     />
     <Tab.Screen
       name="Perfil"
