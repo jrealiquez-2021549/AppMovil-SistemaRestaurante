@@ -1,15 +1,15 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import HomeScreen            from '../../features/client/screens/HomeScreen';
-import MyOrdersScreen        from '../../features/client/screens/MyOrdersScreen';
-import MyReservationsScreen  from '../../features/client/screens/MyReservationsScreen';
-import ProfileScreen         from '../../features/client/screens/ProfileScreen';
+import HomeScreen from '../../features/client/screens/HomeScreen';
+import MyOrdersScreen from '../../features/client/screens/MyOrdersScreen';
+import MyReservationsScreen from '../../features/client/screens/MyReservationsScreen';
+import ProfileScreen from '../../features/client/screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
 const ORANGE = '#E8650A';
-const MUTED  = '#8A8680';
+const MUTED = '#8A8680';
 
 const TabIcon = ({ name, focused }) => (
   <View style={[ti.wrapper, focused && ti.wrapperActive]}>
@@ -42,7 +42,7 @@ const ClientTabs = () => (
         paddingBottom: 12,
         paddingTop: 8,
       },
-      tabBarActiveTintColor:   ORANGE,
+      tabBarActiveTintColor: ORANGE,
       tabBarInactiveTintColor: MUTED,
       tabBarLabelStyle: {
         fontSize: 9,
