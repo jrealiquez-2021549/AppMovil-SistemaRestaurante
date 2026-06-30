@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:3006/kinalGourmetHouse/v1'
+    baseURL: `${import.meta.env.VITE_RESTAURANTE_API_URL}/kinalGourmetHouse/v1`
 });
 apiClient.interceptors.request.use(
     (config) => {

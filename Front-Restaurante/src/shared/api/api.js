@@ -31,8 +31,5 @@ const createInstance = (url) => {
     return instance;
 };
 
-// Autenticación
-export const axiosAuth = createInstance('http://localhost:3005/api');
-
-// Única instancia para todo lo demás (Restaurantes, Platillos, Eventos)
-export const axiosRestaurante = createInstance('http://localhost:3006');
+export const axiosAuth = createInstance(import.meta.env.VITE_AUTH_API_URL);
+export const axiosRestaurante = createInstance(import.meta.env.VITE_RESTAURANTE_API_URL);

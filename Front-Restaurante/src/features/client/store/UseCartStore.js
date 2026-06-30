@@ -82,7 +82,7 @@ export const useCartStore = create((set, get) => ({
 
         try {
             const response = await axios.post(
-                'http://localhost:3006/kinalGourmetHouse/v1/coupons/validate',
+                `${import.meta.env.VITE_RESTAURANTE_API_URL}/kinalGourmetHouse/v1/coupons/validate`,
                 { code, userId, restaurantId, orderTotal: total }
             );
 

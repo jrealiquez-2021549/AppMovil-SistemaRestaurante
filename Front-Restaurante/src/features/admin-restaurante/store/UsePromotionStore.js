@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const API_URL = "http://localhost:3006/kinalGourmetHouse/v1/promotions";
+const API_URL = `${import.meta.env.VITE_RESTAURANTE_API_URL}/kinalGourmetHouse/v1/promotions`;
 
 const getToken = () => localStorage.getItem("token");
 
