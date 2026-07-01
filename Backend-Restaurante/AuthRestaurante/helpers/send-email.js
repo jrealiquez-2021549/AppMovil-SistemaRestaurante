@@ -7,7 +7,10 @@ export const sendVerificationEmail = async (email, token) => {
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
-    }
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
   })
 
 const verificationLink = `${process.env.FRONTEND_URL}/verify/${token}`
@@ -31,7 +34,10 @@ export const sendResetPasswordEmail = async (email, name, token) => {
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
-    }
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
   })
 
   // ✅ Ruta corregida

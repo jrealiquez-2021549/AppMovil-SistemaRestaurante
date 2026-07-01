@@ -42,15 +42,14 @@ const finalRole = role || 'CLIENTE'
     email: email.trim(),
     password: hashedPassword,
     roleId: userRole.id,
-
-    // CLIENTE necesita verificar correo
-    // otros roles se activan automáticamente
     isActive: finalRole === 'CLIENTE' ? false : true
   })
 
   const verificationToken = generateVerificationToken(user)
 
-  await sendVerificationEmail(user.email, verificationToken)
+  sendVerificationEmail(user.email, verificationToken).catch((err) => {
+    console.error(`Fallo al enviar correo de verificación a ${user.email}:`, err.message)
+  })
 
   const userWithoutPassword = user.toJSON()
   delete userWithoutPassword.password
