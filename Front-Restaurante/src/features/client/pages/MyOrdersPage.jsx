@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useOrderStore } from "../store/UseOrderStore";
+import { useOrderStore } from "../store/useOrderStore";
 import { Search, ClipboardList, Clock, CheckCircle, Truck, XCircle, ChevronRight, AlertCircle } from "lucide-react";
 
 const STATUS_FILTERS = [
